@@ -10,6 +10,7 @@
   ],
   "category": "Tools",
   "dependencies": {
+    "com.unity.cinemachine": "2.2.0"
   },
   "license": "MIT",
   "homepage": "https://bitbucket.org/nostgameteam/cinemachine-regions#readme",

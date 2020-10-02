@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Add
+- Cinemachine 2.2.0 dependency
 - CHANGELOG
 - LICENSE
 - README
