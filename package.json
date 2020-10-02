@@ -1,0 +1,24 @@
+{
+  "name": "com.actioncode.cinemachine-regions",
+  "displayName": "ActionCode-Cinemachine Regions",
+  "version": "0.1.0",
+  "unity": "2018.4",
+  "description": "New Confiner used by Cinemachine extension",
+  "keywords": [
+    "Cinemachine",
+    "Extension"
+  ],
+  "category": "Tools",
+  "dependencies": {
+  },
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/nostgameteam/cinemachine-regions#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/nostgameteam/cinemachine-regions.git"
+  },
+  "author": {
+    "name": "Hyago Oliveira",
+    "email": "hyagogow@gmail.com"
+  }
+}
