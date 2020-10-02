@@ -7,6 +7,7 @@ namespace ActionCode.Cinemachine.Editor
     public class CinemachineRegionsConfinerEditor : UnityEditor.Editor
     {
         private CinemachineRegionsConfiner confiner;
+        private RegionOverlaySceneWindow overlayWindow;
 
         private GUIStyle sceneLabelStyle;
 
@@ -15,6 +16,7 @@ namespace ActionCode.Cinemachine.Editor
         private void OnEnable()
         {
             confiner = (CinemachineRegionsConfiner)target;
+            overlayWindow = new RegionOverlaySceneWindow();
 
             InitializeGUIStyles();
         }
@@ -28,6 +30,7 @@ namespace ActionCode.Cinemachine.Editor
         private void OnSceneGUI()
         {
             DrawRegions();
+            overlayWindow.DisplayWindow();
         }
 
         private void InitializeGUIStyles()
