@@ -30,7 +30,6 @@ namespace ActionCode.Cinemachine.Editor
             var currentEvent = Event.current;
             var hasNearestControl = HandleUtility.nearestControl == id;
             var wasMouseLeftClick = currentEvent.button == 0;
-            var wasMouseLeftOrMiddleClick = wasMouseLeftClick || currentEvent.button == 2;
 
             switch (currentEvent.GetTypeForControl(id))
             {
@@ -49,7 +48,7 @@ namespace ActionCode.Cinemachine.Editor
                     break;
 
                 case EventType.MouseDown:
-                    if (hasNearestControl && wasMouseLeftOrMiddleClick)
+                    if (hasNearestControl && wasMouseLeftClick)
                     {
                         // Grab mouse focus
                         GUIUtility.hotControl = id;
@@ -58,7 +57,7 @@ namespace ActionCode.Cinemachine.Editor
                     break;
 
                 case EventType.MouseUp:
-                    if (GUIUtility.hotControl == id && wasMouseLeftOrMiddleClick)
+                    if (GUIUtility.hotControl == id && wasMouseLeftClick)
                     {
                         GUIUtility.hotControl = 0;
                         currentEvent.Use();
