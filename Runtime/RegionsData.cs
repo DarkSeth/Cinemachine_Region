@@ -13,8 +13,6 @@ namespace ActionCode.Cinemachine
         /// </summary>
         public List<Region> regions = new List<Region>();
 
-        public Bounds region;
-
         /// <summary>
         /// The number of regions.
         /// </summary>
