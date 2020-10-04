@@ -27,6 +27,8 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
+            currentRegion = null;
+
             InitializeGUIStyles();
         }
 
@@ -40,7 +42,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             DrawRegions();
             HandleCurrentRegion();
-            overlayWindow.DisplayWindow();
+            overlayWindow.DisplayWindow(ref currentRegion);
         }
 
         private void InitializeGUIStyles()

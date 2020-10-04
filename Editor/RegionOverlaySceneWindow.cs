@@ -7,22 +7,23 @@ namespace ActionCode.Cinemachine.Editor
     {
         public GUIContent Title { get; private set; }
 
-        public bool IsAbleToEdit { get; set; } = true;
-
         private readonly int Id;
-        private readonly Vector2 ScenePanelSize = new Vector2(200F, 140F);
+        private readonly Vector2 ScenePanelSize = new Vector2(200F, 120F);
         private readonly Vector2 ScenePanelPadding = new Vector2(22F, 22F);
 
-        public RegionOverlaySceneWindow(string title = "Regions")
+        private Region region;
+
+        public RegionOverlaySceneWindow(string title = "Current Region")
         {
             Id = typeof(RegionOverlaySceneWindow).GetHashCode();
             Title = EditorGUIUtility.TrTextContent(title);
         }
 
-        public void DisplayWindow()
+        public void DisplayWindow(ref Region region)
         {
+            this.region = region;
             var position = GetWindowsPosition();
-            GUILayout.Window(Id, position, DisplayWindowContent, Title);
+            GUILayout.Window(Id, position, DisplayRegionContent, Title);
         }
 
         private Rect GetWindowsPosition()
@@ -34,22 +35,29 @@ namespace ActionCode.Cinemachine.Editor
                 ScenePanelSize.x, ScenePanelSize.y);
         }
 
-        private void DisplayWindowContent(int windowID)
+        private void DisplayRegionContent(int windowID)
         {
             GUILayout.Space(15F);
+
             GUILayout.BeginVertical();
-
-            EditorGUI.BeginDisabledGroup(!IsAbleToEdit);
-            DisplayFields();
-            EditorGUI.EndDisabledGroup();
-
+            DisplayCurrentRegionFields();
             GUILayout.EndVertical();
         }
 
-        private void DisplayFields()
+        private void DisplayCurrentRegionFields()
         {
-            EditorGUILayout.TextField("Name", "");
-            EditorGUILayout.RectField("Area", default);
+            var hasRegion = region != null;
+
+            if (hasRegion)
+            {
+                region.name = EditorGUILayout.TextField("Name", region.name);
+                region.area = EditorGUILayout.RectField("Area", region.area);
+            }
+            else
+            {
+                const string msg = "Select a Region to edit.";
+                EditorGUILayout.HelpBox(msg, MessageType.Info);
+            }
         }
     }
 }
