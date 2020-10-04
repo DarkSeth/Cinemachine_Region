@@ -23,6 +23,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             this.region = region;
             var position = GetWindowsPosition();
+
             GUILayout.Window(Id, position, DisplayRegionContent, Title);
         }
 
@@ -37,11 +38,13 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DisplayRegionContent(int windowID)
         {
-            GUILayout.Space(15F);
+            Handles.BeginGUI();
+            GUILayout.Space(10F);
 
             GUILayout.BeginVertical();
             DisplayCurrentRegionFields();
             GUILayout.EndVertical();
+            Handles.EndGUI();
         }
 
         private void DisplayCurrentRegionFields()
@@ -50,7 +53,7 @@ namespace ActionCode.Cinemachine.Editor
 
             if (hasRegion)
             {
-                region.name = EditorGUILayout.TextField("Name", region.name);
+                region.name = EditorGUILayout.TextField(region.name);
                 region.area = EditorGUILayout.RectField("Area", region.area);
             }
             else
