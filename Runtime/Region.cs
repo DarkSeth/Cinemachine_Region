@@ -4,10 +4,10 @@ using UnityEngine;
 namespace ActionCode.Cinemachine
 {
     /// <summary>
-    /// Serializable struct to hold Region data.
+    /// Serializable class to hold Region data.
     /// </summary>
     [Serializable]
-    public struct Region
+    public class Region : IEquatable<Region>
     {
         /// <summary>
         /// The region name.
@@ -20,11 +20,6 @@ namespace ActionCode.Cinemachine
         public Rect area;
 
         /// <summary>
-        /// The region unique Identifier.
-        /// </summary>
-        public Guid ID { get; private set; }
-
-        /// <summary>
         /// Creates a new region with the given name and area.
         /// </summary>
         /// <param name="name">The region name.</param>
@@ -33,14 +28,6 @@ namespace ActionCode.Cinemachine
         {
             this.name = name;
             this.area = area;
-        }
-
-        /// <summary>
-        /// Updates the <see cref="ID"/> property.
-        /// </summary>
-        public void UpdateID()
-        {
-            ID = Guid.NewGuid();
         }
 
         /// <summary>
@@ -63,6 +50,11 @@ namespace ActionCode.Cinemachine
         public bool Contains(Vector2 point)
         {
             return area.Contains(point);
+        }
+
+        public bool Equals(Region other)
+        {
+            return area.Equals(other.area);
         }
     }
 }
