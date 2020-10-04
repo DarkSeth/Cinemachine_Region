@@ -18,6 +18,15 @@ namespace ActionCode.Cinemachine
         /// </summary>
         public int Count => regions.Count;
 
+        public Region First
+        {
+            get
+            {
+                if (regions.Count > 0) return regions[0];
+                return null;
+            }
+        }
+
         /// <summary>
         /// Whether this container has any region.
         /// </summary>

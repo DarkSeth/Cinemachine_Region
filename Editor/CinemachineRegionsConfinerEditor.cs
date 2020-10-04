@@ -27,7 +27,10 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
-            currentRegion = null;
+            if (confiner.regionsData)
+            {
+                currentRegion = confiner.regionsData.First;
+            }
 
             InitializeGUIStyles();
         }
