@@ -7,8 +7,8 @@ namespace ActionCode.Cinemachine
     [ExecuteAlways]
     public class CinemachineRegionsConfiner : CinemachineExtension
     {
-        [Tooltip("The volume within which the camera is to be contained")]
-        public RegionsData regions;
+        [Tooltip("The regions which the camera is to be contained.")]
+        public RegionsData regionsData;
         [Range(0F, 10F)]
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.")]
         public float damping = 0F;
@@ -19,7 +19,7 @@ namespace ActionCode.Cinemachine
 
         public bool HasRegions()
         {
-            return regions != null;
+            return regionsData != null;
         }
 
         protected override void PostPipelineStageCallback(
@@ -50,16 +50,16 @@ namespace ActionCode.Cinemachine
 
         private void UpdateCurrentRegionBound(Transform target)
         {
-            if (regions.IsEmpty() || target == null)
+            if (regionsData.IsEmpty() || target == null)
             {
                 CurrentRegion = default;
                 return;
             }
 
             var selectedIndex = -1;
-            for (int i = 0; i < regions.Count; i++)
+            for (int i = 0; i < regionsData.Count; i++)
             {
-                if (regions[i].area.Contains(target.position))
+                if (regionsData[i].area.Contains(target.position))
                 {
                     selectedIndex = i;
                     break;
@@ -71,9 +71,9 @@ namespace ActionCode.Cinemachine
             {
                 // Finds the closest region from target.
                 var closestDistance = Mathf.Infinity;
-                for (int i = 0; i < regions.Count; i++)
+                for (int i = 0; i < regionsData.Count; i++)
                 {
-                    var closestPosition = regions[i].ClosestPoint(target.position);
+                    var closestPosition = regionsData[i].ClosestPoint(target.position);
                     var distance = Vector3.Distance(target.position, closestPosition);
                     if (distance < closestDistance)
                     {
@@ -83,7 +83,7 @@ namespace ActionCode.Cinemachine
                 }
             }
 
-            CurrentRegion = regions[selectedIndex];
+            CurrentRegion = regionsData[selectedIndex];
         }
 
         // Camera must be orthographic

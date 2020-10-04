@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEditor.IMGUI.Controls;
 
 namespace ActionCode.Cinemachine.Editor
 {
@@ -10,13 +11,21 @@ namespace ActionCode.Cinemachine.Editor
         private RegionOverlaySceneWindow overlayWindow;
 
         private GUIStyle sceneLabelStyle;
+        private BoxBoundsHandle currentRegionHandle;
 
-        private readonly Color regionsColor = new Color(0f, 1f, 0f, 0.4f);
+        private Region currentRegion;
+
+        private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
 
         private void OnEnable()
         {
             confiner = (CinemachineRegionsConfiner)target;
             overlayWindow = new RegionOverlaySceneWindow();
+
+            currentRegionHandle = new BoxBoundsHandle
+            {
+                axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
+            };
 
             InitializeGUIStyles();
         }
@@ -30,6 +39,7 @@ namespace ActionCode.Cinemachine.Editor
         private void OnSceneGUI()
         {
             DrawRegions();
+            HandleCurrentRegion();
             overlayWindow.DisplayWindow();
         }
 
@@ -41,7 +51,7 @@ namespace ActionCode.Cinemachine.Editor
                 alignment = TextAnchor.LowerLeft,
                 fontSize = 16
             };
-            sceneLabelStyle.normal.textColor = regionsColor;
+            sceneLabelStyle.normal.textColor = REGIONS_COLOR;
         }
 
         private void DrawCreateRegionsDataButton()
@@ -68,7 +78,7 @@ namespace ActionCode.Cinemachine.Editor
                 AssetDatabase.CreateAsset(data, path);
                 AssetDatabase.Refresh();
 
-                confiner.regions = AssetDatabase.LoadAssetAtPath<RegionsData>(path);
+                confiner.regionsData = AssetDatabase.LoadAssetAtPath<RegionsData>(path);
             }
         }
 
@@ -76,19 +86,47 @@ namespace ActionCode.Cinemachine.Editor
         {
             if (!confiner.HasRegions()) return;
 
-            Handles.color = regionsColor;
-            foreach (var region in confiner.regions.regions)
+            var handlesColor = Handles.color;
+            Handles.color = REGIONS_COLOR;
+
+            foreach (var region in confiner.regionsData.regions)
             {
-                Vector2 topLeft = region.area.position + Vector2.up * region.area.height;
-                Vector2 bottomRight = region.area.position + Vector2.right * region.area.width;
+                var selectRegion = HandlesButton.RectButton(region.area);
+                if (selectRegion)
+                {
+                    currentRegion = region;
+                    OnCurrentRegionChange();
+                }
 
-                Handles.DrawLine(region.area.position, topLeft);
-                Handles.DrawLine(topLeft, region.area.max);
-                Handles.DrawLine(region.area.max, bottomRight);
-                Handles.DrawLine(region.area.position, bottomRight);
-
-                Handles.Label(topLeft, region.name, sceneLabelStyle);
+                var labelPosition = region.area.min + Vector2.up * region.area.height;
+                Handles.Label(labelPosition, region.name, sceneLabelStyle);
             }
+
+            Handles.color = handlesColor;
+        }
+
+        private void HandleCurrentRegion()
+        {
+            if (currentRegion == null) return;
+
+            currentRegionHandle.center = currentRegion.area.center;
+            currentRegionHandle.size = currentRegion.area.size;
+
+            EditorGUI.BeginChangeCheck();
+            currentRegionHandle.DrawHandle();
+            var hasChanges = EditorGUI.EndChangeCheck();
+
+            if (hasChanges)
+            {
+                // This order is important
+                currentRegion.area.size = currentRegionHandle.size;
+                currentRegion.area.center = currentRegionHandle.center;
+            }
+        }
+
+        private void OnCurrentRegionChange()
+        {
+
         }
     }
 }
