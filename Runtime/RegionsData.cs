@@ -18,11 +18,26 @@ namespace ActionCode.Cinemachine
         /// </summary>
         public int Count => regions.Count;
 
+        /// <summary>
+        /// The first region if available. Returns null otherwise.
+        /// </summary>
         public Region First
         {
             get
             {
-                if (regions.Count > 0) return regions[0];
+                if (!IsEmpty()) return regions[0];
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The last region if available. Returns null otherwise.
+        /// </summary>
+        public Region Last
+        {
+            get
+            {
+                if (!IsEmpty()) return regions[regions.Count - 1];
                 return null;
             }
         }

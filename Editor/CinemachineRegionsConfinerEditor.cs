@@ -7,6 +7,8 @@ namespace ActionCode.Cinemachine.Editor
     [CustomEditor(typeof(CinemachineRegionsConfiner))]
     public class CinemachineRegionsConfinerEditor : UnityEditor.Editor
     {
+        private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
+
         private CinemachineRegionsConfiner confiner;
         private RegionOverlaySceneWindow overlayWindow;
 
@@ -14,8 +16,6 @@ namespace ActionCode.Cinemachine.Editor
         private BoxBoundsHandle currentRegionHandle;
 
         private Region currentRegion;
-
-        private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
 
         private void OnEnable()
         {
@@ -27,7 +27,7 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
-            if (confiner.regionsData)
+            if (confiner.HasRegions())
             {
                 currentRegion = confiner.regionsData.First;
             }
@@ -38,14 +38,21 @@ namespace ActionCode.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            DrawCreateRegionsDataButton();
+
+            if (!confiner.HasRegions())
+            {
+                DrawCreateRegionsDataButton();
+            }
         }
 
         private void OnSceneGUI()
         {
-            DrawRegions();
-            HandleCurrentRegion();
-            overlayWindow.DisplayWindow(ref currentRegion);
+            if (confiner.HasRegions())
+            {
+                DrawRegions();
+                HandleCurrentRegion();
+                overlayWindow.DisplayWindow(ref currentRegion);
+            }
         }
 
         private void InitializeGUIStyles()
@@ -61,8 +68,6 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawCreateRegionsDataButton()
         {
-            if (confiner.HasRegions()) return;
-
             if (GUILayout.Button("Create New Regions"))
             {
                 CreateRegionsData();
@@ -89,25 +94,18 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawRegions()
         {
-            if (!confiner.HasRegions()) return;
-
-            var handlesColor = Handles.color;
+            var lastHandlesColor = Handles.color;
             Handles.color = REGIONS_COLOR;
 
             foreach (var region in confiner.regionsData.regions)
             {
                 var selectRegion = HandlesButton.RectButton(region.area);
-                if (selectRegion)
-                {
-                    currentRegion = region;
-                    OnCurrentRegionChange();
-                }
+                if (selectRegion) currentRegion = region;
 
-                var labelPosition = region.area.min + Vector2.up * region.area.height;
-                Handles.Label(labelPosition, region.name, sceneLabelStyle);
+                Handles.Label(region.TopLeftPos, region.name, sceneLabelStyle);
             }
 
-            Handles.color = handlesColor;
+            Handles.color = lastHandlesColor;
         }
 
         private void HandleCurrentRegion()
@@ -127,11 +125,6 @@ namespace ActionCode.Cinemachine.Editor
                 currentRegion.area.size = currentRegionHandle.size;
                 currentRegion.area.center = currentRegionHandle.center;
             }
-        }
-
-        private void OnCurrentRegionChange()
-        {
-
         }
     }
 }

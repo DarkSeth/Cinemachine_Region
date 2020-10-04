@@ -56,5 +56,14 @@ namespace ActionCode.Cinemachine
         {
             return area.Equals(other.area);
         }
+
+        public Vector2 TopLeftPos => BottomLeftPos + Vector2.up * area.height;
+
+        public Vector2 TopRightPos => area.max;
+
+        public Vector2 BottomRightPos => BottomLeftPos + Vector2.right * area.width;
+
+        public Vector2 BottomLeftPos => area.min;
+
     }
 }

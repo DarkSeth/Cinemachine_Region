@@ -5,7 +5,10 @@ namespace ActionCode.Cinemachine.Editor
 {
     /// <summary>
     /// Handles buttons drawings on the Scene window.
-    /// <para>This class was created using <see cref="UnityEditorInternal.Button"/> and <see cref="Handles"/> as references.</para>
+    /// <para>
+    /// This class was created using <see cref="UnityEditorInternal.Button"/> and <see cref="Handles"/> as references.
+    /// This was necessary since the original ones didn't support drawing rectangles with different width and height.
+    /// </para>
     /// </summary>
     public static class HandlesButton
     {
@@ -68,10 +71,11 @@ namespace ActionCode.Cinemachine.Editor
                 case EventType.Repaint:
                     Color origColor = Handles.color;
                     if (hasNearestControl && GUI.enabled && GUIUtility.hotControl == 0)
+                    {
                         Handles.color = Handles.preselectionColor;
+                    }
 
                     drawFunction(id, area, EventType.Repaint);
-
                     Handles.color = origColor;
                     break;
             }
