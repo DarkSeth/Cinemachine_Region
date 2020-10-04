@@ -15,7 +15,14 @@ namespace ActionCode.Cinemachine.Editor
         private static readonly int RectButtonHash = "RectButtonHash".GetHashCode();
         private static readonly Vector3[] RectangleHandlePointsCache = new Vector3[5];
 
-        private delegate void DrawRectCapFunction(int controlID, Rect area, EventType eventType);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="controlID">The controller id</param>
+        /// <param name="area">The area to drown.</param>
+        /// <param name="skin">The amount to expands (if positive) or shrinks (if negative) the collider.</param>
+        /// <param name="eventType">The event type.</param>
+        private delegate void DrawRectCapFunction(int controlID, Rect area, float skin, EventType eventType);
 
         /// <summary>
         /// Draws a rectangular button with the given area.
@@ -24,11 +31,13 @@ namespace ActionCode.Cinemachine.Editor
         /// <returns>True when the user clicks the button.</returns>
         public static bool RectButton(Rect area)
         {
-            int id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
-            return Do(id, area, DrawRectangleHandleCap);
+            // Shrinks the collider a little bit for better GUI iteration.
+            const float SKIN = -0.25F;
+            var id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
+            return Do(id, area, SKIN, DrawRectangleHandleCap);
         }
 
-        private static bool Do(int id, Rect area, DrawRectCapFunction drawFunction)
+        private static bool Do(int id, Rect area, float skin, DrawRectCapFunction drawFunction)
         {
             var currentEvent = Event.current;
             var hasNearestControl = HandleUtility.nearestControl == id;
@@ -39,7 +48,7 @@ namespace ActionCode.Cinemachine.Editor
                 case EventType.Layout:
                     if (GUI.enabled)
                     {
-                        drawFunction(id, area, EventType.Layout);
+                        drawFunction(id, area, skin, EventType.Layout);
                     }
                     break;
 
@@ -75,7 +84,7 @@ namespace ActionCode.Cinemachine.Editor
                         Handles.color = Handles.preselectionColor;
                     }
 
-                    drawFunction(id, area, EventType.Repaint);
+                    drawFunction(id, area, skin, EventType.Repaint);
                     Handles.color = origColor;
                     break;
             }
@@ -83,14 +92,14 @@ namespace ActionCode.Cinemachine.Editor
             return false;
         }
 
-        private static void DrawRectangleHandleCap(int controlID, Rect area, EventType eventType)
+        private static void DrawRectangleHandleCap(int controlID, Rect area, float skin, EventType eventType)
         {
             switch (eventType)
             {
                 case EventType.Layout:
                 case EventType.MouseMove:
                     // TODO: Create DistanceToRectangle
-                    HandleUtility.AddControl(controlID, DistanceToRectangle(area));
+                    HandleUtility.AddControl(controlID, DistanceToRectangle(area, skin));
                     break;
                 case (EventType.Repaint):
                     UpdateRectangleHandlePointsCache(area);
@@ -99,8 +108,19 @@ namespace ActionCode.Cinemachine.Editor
             }
         }
 
-        private static float DistanceToRectangle(Rect area)
+        private static float DistanceToRectangle(Rect area, float skin)
         {
+            if (skin > 0)
+            {
+                area.min -= Vector2.one * skin;
+                area.max += Vector2.one * skin;
+            }
+            else if (skin < 0)
+            {
+                area.min -= Vector2.one * skin;
+                area.max += Vector2.one * skin;
+            }
+
             UpdateRectangleHandlePointsCache(area);
             var points = new Vector3[RectangleHandlePointsCache.Length];
 
