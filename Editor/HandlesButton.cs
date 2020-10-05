@@ -18,26 +18,29 @@ namespace ActionCode.Cinemachine.Editor
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="controlID">The controller id</param>
-        /// <param name="area">The area to drown.</param>
-        /// <param name="skin">The amount to expands (if positive) or shrinks (if negative) the collider.</param>
+        /// <param name="controlID">The controller id.</param>
+        /// <param name="area">The area to drawn.</param>
+        /// <param name="skin">The amount to expand (if positive) or shrink (if negative) the collider.</param>
+        /// <param name="angle">The angle to draw.</param>
         /// <param name="eventType">The event type.</param>
-        private delegate void DrawRectCapFunction(int controlID, Rect area, float skin, EventType eventType);
+        private delegate void DrawRectCapFunction(int controlID, Rect area, float skin, float angle, EventType eventType);
+
 
         /// <summary>
         /// Draws a rectangular button with the given area.
         /// </summary>
         /// <param name="area">Area to draw the button.</param>
+        /// <param name="angle">The angle to draw the button.</param>
         /// <returns>True when the user clicks the button.</returns>
-        public static bool RectButton(Rect area)
+        public static bool RectButton(Rect area, float angle = 0F)
         {
             // Shrinks the collider a little bit for better GUI iteration.
             const float SKIN = -0.25F;
             var id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
-            return Do(id, area, SKIN, DrawRectangleHandleCap);
+            return Do(id, area, SKIN, angle, DrawRectangleHandleCap);
         }
 
-        private static bool Do(int id, Rect area, float skin, DrawRectCapFunction drawFunction)
+        private static bool Do(int id, Rect area, float skin, float angle, DrawRectCapFunction drawFunction)
         {
             var currentEvent = Event.current;
             var hasNearestControl = HandleUtility.nearestControl == id;
@@ -48,7 +51,7 @@ namespace ActionCode.Cinemachine.Editor
                 case EventType.Layout:
                     if (GUI.enabled)
                     {
-                        drawFunction(id, area, skin, EventType.Layout);
+                        drawFunction(id, area, skin, angle, EventType.Layout);
                     }
                     break;
 
@@ -84,7 +87,7 @@ namespace ActionCode.Cinemachine.Editor
                         Handles.color = Handles.preselectionColor;
                     }
 
-                    drawFunction(id, area, skin, EventType.Repaint);
+                    drawFunction(id, area, skin, angle, EventType.Repaint);
                     Handles.color = origColor;
                     break;
             }
@@ -92,23 +95,23 @@ namespace ActionCode.Cinemachine.Editor
             return false;
         }
 
-        private static void DrawRectangleHandleCap(int controlID, Rect area, float skin, EventType eventType)
+        private static void DrawRectangleHandleCap(int controlID, Rect area, float skin, float angle, EventType eventType)
         {
             switch (eventType)
             {
                 case EventType.Layout:
                 case EventType.MouseMove:
                     // TODO: Create DistanceToRectangle
-                    HandleUtility.AddControl(controlID, DistanceToRectangle(area, skin));
+                    HandleUtility.AddControl(controlID, DistanceToRectangle(area, skin, angle));
                     break;
                 case (EventType.Repaint):
-                    UpdateRectangleHandlePointsCache(area);
+                    UpdateRectangleHandlePointsCache(area, angle);
                     Handles.DrawPolyLine(RectangleHandlePointsCache);
                     break;
             }
         }
 
-        private static float DistanceToRectangle(Rect area, float skin)
+        private static float DistanceToRectangle(Rect area, float skin, float angle)
         {
             if (skin > 0)
             {
@@ -121,7 +124,7 @@ namespace ActionCode.Cinemachine.Editor
                 area.max += Vector2.one * skin;
             }
 
-            UpdateRectangleHandlePointsCache(area);
+            UpdateRectangleHandlePointsCache(area, angle);
             var points = new Vector3[RectangleHandlePointsCache.Length];
 
             for (int i = 0; i < points.Length; i++)
@@ -161,7 +164,7 @@ namespace ActionCode.Cinemachine.Editor
             return 0;
         }
 
-        private static void UpdateRectangleHandlePointsCache(Rect area)
+        private static void UpdateRectangleHandlePointsCache(Rect area, float angle)
         {
             var topLeftPos = area.position + Vector2.up * area.height;
             var bottomRightPos = area.position + Vector2.right * area.width;
@@ -170,7 +173,26 @@ namespace ActionCode.Cinemachine.Editor
             RectangleHandlePointsCache[1] = bottomRightPos;
             RectangleHandlePointsCache[2] = area.max;
             RectangleHandlePointsCache[3] = topLeftPos;
+
+            // Applies the rotation
+            for (int i = 0; i < 4; i++)
+            {
+                RectangleHandlePointsCache[i] = RotateAroundPivot(RectangleHandlePointsCache[i], area.center, angle);
+            }
+
             RectangleHandlePointsCache[4] = RectangleHandlePointsCache[0];
+        }
+
+        private static Vector2 RotateAroundPivot(Vector2 point, Vector2 pivot, float angle)
+        {
+            const float TO_RADIANS = Mathf.PI / 180F;
+            angle *= TO_RADIANS;
+            Vector2 dir = point - pivot;
+            float cosAngle = Mathf.Cos(angle);
+            float sinAngle = Mathf.Sin(angle);
+            point.x = cosAngle * dir.x - sinAngle * dir.y + pivot.x;
+            point.y = sinAngle * dir.x + cosAngle * dir.y + pivot.y;
+            return point;
         }
     }
 }
