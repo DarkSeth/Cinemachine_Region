@@ -174,10 +174,13 @@ namespace ActionCode.Cinemachine.Editor
             RectangleHandlePointsCache[2] = area.max;
             RectangleHandlePointsCache[3] = topLeftPos;
 
-            // Applies the rotation
-            for (int i = 0; i < 4; i++)
+            var applyRotation = Mathf.Abs(angle) > 0f;
+            if (applyRotation)
             {
-                RectangleHandlePointsCache[i] = RotateAroundPivot(RectangleHandlePointsCache[i], area.center, angle);
+                for (int i = 0; i < 4; i++)
+                {
+                    RectangleHandlePointsCache[i] = RotateAroundPivot(RectangleHandlePointsCache[i], area.center, angle);
+                }
             }
 
             RectangleHandlePointsCache[4] = RectangleHandlePointsCache[0];
