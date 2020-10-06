@@ -61,6 +61,8 @@ namespace ActionCode.Cinemachine
 
         public Vector2 TopRightPos => area.max;
 
+        public Vector2 CenterPos => area.center;
+
         public Vector2 BottomRightPos => BottomLeftPos + Vector2.right * area.width;
 
         public Vector2 BottomLeftPos => area.min;

@@ -8,10 +8,11 @@ namespace ActionCode.Cinemachine.Editor
         public GUIContent Title { get; private set; }
 
         private readonly int Id;
-        private readonly Vector2 ScenePanelSize = new Vector2(200F, 120F);
-        private readonly Vector2 ScenePanelPadding = new Vector2(22F, 22F);
+        private readonly Vector2 ScenePanelSize = new Vector2(200F, 140F);
+        private readonly Vector2 ScenePanelPadding = new Vector2(10F, 30F);
 
         private Region region;
+        private bool showBounds = true;
 
         public RegionOverlaySceneWindow(string title = "Current Region")
         {
@@ -30,24 +31,23 @@ namespace ActionCode.Cinemachine.Editor
         private Rect GetWindowsPosition()
         {
             var sceneSize = SceneView.currentDrawingSceneView.position.size;
-            return new Rect(
-                ScenePanelPadding.x,
-                sceneSize.y - ScenePanelSize.y - ScenePanelPadding.y,
-                ScenePanelSize.x, ScenePanelSize.y);
+            return new Rect(ScenePanelPadding, ScenePanelSize);
         }
 
         private void DisplayRegionContent(int windowID)
         {
             Handles.BeginGUI();
+            GUILayout.BeginVertical();
             GUILayout.Space(10F);
 
-            GUILayout.BeginVertical();
-            DisplayCurrentRegionFields();
+            DrawRegionFields();
+            DrawRegionBounds();
+
             GUILayout.EndVertical();
             Handles.EndGUI();
         }
 
-        private void DisplayCurrentRegionFields()
+        private void DrawRegionFields()
         {
             var hasRegion = region != null;
 
@@ -61,6 +61,24 @@ namespace ActionCode.Cinemachine.Editor
                 const string msg = "Select a Region to edit.";
                 EditorGUILayout.HelpBox(msg, MessageType.Info);
             }
+        }
+
+        private void DrawRegionBounds()
+        {
+            showBounds = EditorGUILayout.Foldout(showBounds, "Bounds Positions", true);
+            if (!showBounds) return;
+
+            EditorGUI.BeginDisabledGroup(true);
+
+            EditorGUILayout.Vector2Field("Top Left", region.TopLeftPos);
+            EditorGUILayout.Vector2Field("Top Right", region.TopRightPos);
+
+            EditorGUILayout.Vector2Field("Center", region.CenterPos);
+
+            EditorGUILayout.Vector2Field("Bottom Left", region.BottomLeftPos);
+            EditorGUILayout.Vector2Field("Bottom Right", region.BottomRightPos);
+
+            EditorGUI.EndDisabledGroup();
         }
     }
 }
