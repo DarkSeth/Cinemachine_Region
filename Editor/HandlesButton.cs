@@ -20,10 +20,10 @@ namespace ActionCode.Cinemachine.Editor
         /// </summary>
         /// <param name="controlID">The controller id.</param>
         /// <param name="area">The area to drawn.</param>
-        /// <param name="skin">The amount to expand (if positive) or shrink (if negative) the collider.</param>
+        /// <param name="collision">The area to check collision.</param>
         /// <param name="angle">The angle to draw.</param>
         /// <param name="eventType">The event type.</param>
-        private delegate void DrawRectCapFunction(int controlID, Rect area, float skin, float angle, EventType eventType);
+        private delegate void DrawRectCapFunction(int controlID, Rect area, Rect collision, float angle, EventType eventType);
 
 
         /// <summary>
@@ -34,13 +34,28 @@ namespace ActionCode.Cinemachine.Editor
         /// <returns>True when the user clicks the button.</returns>
         public static bool RectButton(Rect area, float angle = 0F)
         {
-            // Shrinks the collider a little bit for better GUI iteration.
-            const float SKIN = -0.25F;
-            var id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
-            return Do(id, area, SKIN, angle, DrawRectangleHandleCap);
+            const float SKIN = 0.1F;
+            var halfSize = new Vector2(area.width * SKIN, area.height * SKIN);
+            var collision = area;
+            collision.min += halfSize;
+            collision.max -= halfSize;
+            return RectButton(area, collision, angle);
         }
 
-        private static bool Do(int id, Rect area, float skin, float angle, DrawRectCapFunction drawFunction)
+        /// <summary>
+        /// Draws a rectangular button with the given area.
+        /// </summary>
+        /// <param name="area">Area to draw the button.</param>
+        /// <param name="collision">The area to check collision with the button.</param>
+        /// <param name="angle">The angle to draw the button.</param>
+        /// <returns>True when the user clicks the button.</returns>
+        public static bool RectButton(Rect area, Rect collision, float angle = 0F)
+        {
+            var id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
+            return Do(id, area, collision, angle, DrawRectangleHandleCap);
+        }
+
+        private static bool Do(int id, Rect area, Rect collision, float angle, DrawRectCapFunction drawFunction)
         {
             var currentEvent = Event.current;
             var hasNearestControl = HandleUtility.nearestControl == id;
@@ -51,7 +66,7 @@ namespace ActionCode.Cinemachine.Editor
                 case EventType.Layout:
                     if (GUI.enabled)
                     {
-                        drawFunction(id, area, skin, angle, EventType.Layout);
+                        drawFunction(id, area, collision, angle, EventType.Layout);
                     }
                     break;
 
@@ -87,7 +102,7 @@ namespace ActionCode.Cinemachine.Editor
                         Handles.color = Handles.preselectionColor;
                     }
 
-                    drawFunction(id, area, skin, angle, EventType.Repaint);
+                    drawFunction(id, area, collision, angle, EventType.Repaint);
                     Handles.color = origColor;
                     break;
             }
@@ -95,14 +110,13 @@ namespace ActionCode.Cinemachine.Editor
             return false;
         }
 
-        private static void DrawRectangleHandleCap(int controlID, Rect area, float skin, float angle, EventType eventType)
+        private static void DrawRectangleHandleCap(int controlID, Rect area, Rect collision, float angle, EventType eventType)
         {
             switch (eventType)
             {
                 case EventType.Layout:
                 case EventType.MouseMove:
-                    // TODO: Create DistanceToRectangle
-                    HandleUtility.AddControl(controlID, DistanceToRectangle(area, skin, angle));
+                    HandleUtility.AddControl(controlID, DistanceToRectangle(collision, angle));
                     break;
                 case (EventType.Repaint):
                     UpdateRectangleHandlePointsCache(area, angle);
@@ -111,20 +125,9 @@ namespace ActionCode.Cinemachine.Editor
             }
         }
 
-        private static float DistanceToRectangle(Rect area, float skin, float angle)
+        private static float DistanceToRectangle(Rect collision, float angle)
         {
-            if (skin > 0)
-            {
-                area.min -= Vector2.one * skin;
-                area.max += Vector2.one * skin;
-            }
-            else if (skin < 0)
-            {
-                area.min -= Vector2.one * skin;
-                area.max += Vector2.one * skin;
-            }
-
-            UpdateRectangleHandlePointsCache(area, angle);
+            UpdateRectangleHandlePointsCache(collision, angle);
             var points = new Vector3[RectangleHandlePointsCache.Length];
 
             for (int i = 0; i < points.Length; i++)

@@ -99,10 +99,10 @@ namespace ActionCode.Cinemachine.Editor
 
             foreach (var region in confiner.regionsData.regions)
             {
+                Handles.Label(region.TopLeftPos, region.name, sceneLabelStyle);
+
                 var selectRegion = HandlesButton.RectButton(region.area);
                 if (selectRegion) currentRegion = region;
-
-                Handles.Label(region.TopLeftPos, region.name, sceneLabelStyle);
             }
 
             Handles.color = lastHandlesColor;
