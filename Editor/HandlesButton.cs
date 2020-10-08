@@ -13,7 +13,10 @@ namespace ActionCode.Cinemachine.Editor
     public static class HandlesButton
     {
         private static readonly int RectButtonHash = "RectButtonHash".GetHashCode();
+        private static readonly int ArrowButtonHash = "ArrowButtonHash".GetHashCode();
+
         private static readonly Vector3[] RectangleHandlePointsCache = new Vector3[5];
+        private static readonly Vector3[] ArrowHandlePointsCache = new Vector3[8];
 
         /// <summary>
         /// 
@@ -53,6 +56,32 @@ namespace ActionCode.Cinemachine.Editor
         {
             var id = GUIUtility.GetControlID(RectButtonHash, FocusType.Passive);
             return Do(id, area, collision, angle, DrawRectangleHandleCap);
+        }
+
+        /// <summary>
+        /// Draws a rectangular arrow button with the given center, size and angle.
+        /// </summary>
+        /// <param name="center">The center position to draw the button.</param>
+        /// <param name="size">The size to draw the button.</param>
+        /// <param name="angle">The angle to draw the arrow.</param>
+        /// <returns>True when the user clicks the button.</returns>
+        public static bool ArrowButton(Vector2 center, Vector2 size, float angle)
+        {
+            var position = center - Vector2.one * size * 0.5F;
+            var rectPos = new Rect(position, size);
+            return ArrowButton(rectPos, angle);
+        }
+
+        /// <summary>
+        /// Draws a rectangular arrow button with the given area and angle.
+        /// </summary>
+        /// <param name="area">Area to draw the button.</param>
+        /// <param name="angle">The angle to draw the arrow.</param>
+        /// <returns>True when the user clicks the button.</returns>
+        public static bool ArrowButton(Rect area, float angle)
+        {
+            var id = GUIUtility.GetControlID(ArrowButtonHash, FocusType.Passive);
+            return Do(id, area, area, angle, DrawArrowHandleCap);
         }
 
         private static bool Do(int id, Rect area, Rect collision, float angle, DrawRectCapFunction drawFunction)
@@ -125,6 +154,21 @@ namespace ActionCode.Cinemachine.Editor
             }
         }
 
+        private static void DrawArrowHandleCap(int controlID, Rect area, Rect collision, float angle, EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Layout:
+                case EventType.MouseMove:
+                    HandleUtility.AddControl(controlID, DistanceToRectangle(collision, angle));
+                    break;
+                case (EventType.Repaint):
+                    UpdateArrowHandlePointsCache(area, angle);
+                    Handles.DrawPolyLine(ArrowHandlePointsCache);
+                    break;
+            }
+        }
+
         private static float DistanceToRectangle(Rect collision, float angle)
         {
             UpdateRectangleHandlePointsCache(collision, angle);
@@ -187,6 +231,33 @@ namespace ActionCode.Cinemachine.Editor
             }
 
             RectangleHandlePointsCache[4] = RectangleHandlePointsCache[0];
+        }
+
+        private static void UpdateArrowHandlePointsCache(Rect area, float angle)
+        {
+            var halfHeight = area.height * 0.5F;
+            var quarterHeight = halfHeight * 0.5f;
+            var halfWidth = area.width * 0.5F;
+
+            ArrowHandlePointsCache[0] = area.min + Vector2.up * quarterHeight;
+            ArrowHandlePointsCache[1] = ArrowHandlePointsCache[0] + Vector3.right * halfWidth;
+            ArrowHandlePointsCache[2] = area.min + Vector2.right * halfWidth;
+            ArrowHandlePointsCache[3] = area.max + Vector2.down * halfHeight;
+
+            ArrowHandlePointsCache[4] = ArrowHandlePointsCache[2] + Vector3.up * area.height;
+            ArrowHandlePointsCache[5] = ArrowHandlePointsCache[4] + Vector3.down * quarterHeight;
+            ArrowHandlePointsCache[6] = ArrowHandlePointsCache[5] + Vector3.left * halfWidth;
+
+            var applyRotation = Mathf.Abs(angle) > 0f;
+            if (applyRotation)
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    ArrowHandlePointsCache[i] = RotateAroundPivot(ArrowHandlePointsCache[i], area.center, angle);
+                }
+            }
+
+            ArrowHandlePointsCache[7] = ArrowHandlePointsCache[0];
         }
 
         private static Vector2 RotateAroundPivot(Vector2 point, Vector2 pivot, float angle)
