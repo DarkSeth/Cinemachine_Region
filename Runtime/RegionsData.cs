@@ -51,6 +51,32 @@ namespace ActionCode.Cinemachine
             return Count == 0;
         }
 
+        /// <summary>
+        /// Returns true if the given point is inside any region area.
+        /// </summary>
+        /// <param name="position">Point to test.</param>
+        /// <returns>True if the point lies within any area.</returns>
+        public bool Contains(Vector2 position)
+        {
+            foreach (var region in regions)
+            {
+                if (region.Contains(position)) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Creates a new Region using the given data.
+        /// </summary>
+        /// <param name="area">The new region area.</param>
+        public void Create(Rect area)
+        {
+            var name = $"Region #{Count + 1}";
+            var region = new Region(name, area);
+            regions.Add(region);
+        }
+
         public Region this[int i]
         {
             get { return regions[i]; }

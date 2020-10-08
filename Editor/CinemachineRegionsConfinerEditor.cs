@@ -50,7 +50,12 @@ namespace ActionCode.Cinemachine.Editor
             if (confiner.HasRegions())
             {
                 DrawRegions();
-                HandleCurrentRegion();
+                var hasCurrentRegion = currentRegion != null;
+                if (hasCurrentRegion)
+                {
+                    HandleCurrentRegion();
+                    DrawCurrentRegionCreateButtons();
+                }
                 overlayWindow.DisplayWindow(ref currentRegion);
             }
         }
@@ -82,8 +87,8 @@ namespace ActionCode.Cinemachine.Editor
             var isValid = path.Length > 0;
             if (isValid)
             {
-                var region = new Region("Region #0", new Rect(-20, -10, 40, 20));
-                data.regions.Add(region);
+                var area = new Rect(-20, -10, 40, 20);
+                data.Create(area);
 
                 AssetDatabase.CreateAsset(data, path);
                 AssetDatabase.Refresh();
@@ -110,8 +115,6 @@ namespace ActionCode.Cinemachine.Editor
 
         private void HandleCurrentRegion()
         {
-            if (currentRegion == null) return;
-
             currentRegionHandle.center = currentRegion.area.center;
             currentRegionHandle.size = currentRegion.area.size;
 
@@ -125,6 +128,60 @@ namespace ActionCode.Cinemachine.Editor
                 currentRegion.area.size = currentRegionHandle.size;
                 currentRegion.area.center = currentRegionHandle.center;
             }
+        }
+
+        private void DrawCurrentRegionCreateButtons()
+        {
+            const float SKIN = 1.5F;
+            Vector2 size = Vector2.one * 2F;
+
+            var rightPos = currentRegion.CenterRightPos + Vector2.right * SKIN;
+            var leftPos = currentRegion.CenterLeftPos + Vector2.left * SKIN;
+            var topPos = currentRegion.TopPos + Vector2.up * SKIN;
+            var bottomPos = currentRegion.BottomPos + Vector2.down * SKIN;
+
+            var isRightButtonAvailable = !confiner.regionsData.Contains(rightPos);
+            var isLeftButtonAvailable = !confiner.regionsData.Contains(leftPos);
+            var isTopButtonAvailable = !confiner.regionsData.Contains(topPos);
+            var isBottomButtonAvailable = !confiner.regionsData.Contains(bottomPos);
+
+            var rightButtonDown =
+                isRightButtonAvailable &&
+                HandlesButton.ArrowButton(rightPos, size, 0F);
+            var leftButtonDown =
+                isLeftButtonAvailable &&
+                HandlesButton.ArrowButton(leftPos, size, 180F);
+            var topButtonDown =
+                isTopButtonAvailable &&
+                HandlesButton.ArrowButton(topPos, size, 90F);
+            var bottomButtonDown =
+                isBottomButtonAvailable &&
+                HandlesButton.ArrowButton(bottomPos, size, 270F);
+
+            if (rightButtonDown)
+            {
+                CreateRegion(Vector2.right, currentRegion.area.width);
+            }
+            else if (leftButtonDown)
+            {
+                CreateRegion(Vector2.left, currentRegion.area.width);
+            }
+            else if (topButtonDown)
+            {
+                CreateRegion(Vector2.up, currentRegion.area.height);
+            }
+            else if (bottomButtonDown)
+            {
+                CreateRegion(Vector2.down, currentRegion.area.height);
+            }
+        }
+
+        private void CreateRegion(Vector2 direction, float distance)
+        {
+            var area = new Rect(currentRegion.area);
+            area.position += direction * distance;
+            confiner.regionsData.Create(area);
+            currentRegion = confiner.regionsData.Last;
         }
     }
 }

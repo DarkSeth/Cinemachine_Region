@@ -52,6 +52,13 @@ namespace ActionCode.Cinemachine
             return area.Contains(point);
         }
 
+        public bool Contains(Rect area)
+        {
+            return
+                Contains(area.min) &&
+                Contains(area.max);
+        }
+
         public bool Equals(Region other)
         {
             return area.Equals(other.area);
@@ -59,13 +66,20 @@ namespace ActionCode.Cinemachine
 
         public Vector2 TopLeftPos => BottomLeftPos + Vector2.up * area.height;
 
+        public Vector2 TopPos => CenterPos + Vector2.up * area.height * 0.5F;
+
         public Vector2 TopRightPos => area.max;
+
+        public Vector2 CenterLeftPos => BottomLeftPos + Vector2.up * area.height * 0.5F;
 
         public Vector2 CenterPos => area.center;
 
+        public Vector2 CenterRightPos => TopRightPos + Vector2.down * area.height * 0.5F;
+
         public Vector2 BottomRightPos => BottomLeftPos + Vector2.right * area.width;
 
-        public Vector2 BottomLeftPos => area.min;
+        public Vector2 BottomPos => CenterPos + Vector2.down * area.height * 0.5F;
 
+        public Vector2 BottomLeftPos => area.min;
     }
 }
