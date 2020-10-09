@@ -14,9 +14,11 @@ namespace ActionCode.Cinemachine.Editor
     {
         private static readonly int RectButtonHash = "RectButtonHash".GetHashCode();
         private static readonly int ArrowButtonHash = "ArrowButtonHash".GetHashCode();
+        private static readonly int CrossButtonHash = "CrossButtonHash".GetHashCode();
 
         private static readonly Vector3[] RectangleHandlePointsCache = new Vector3[5];
         private static readonly Vector3[] ArrowHandlePointsCache = new Vector3[8];
+        private static readonly Vector3[] CrossHandlePointsCache = new Vector3[13];
 
         /// <summary>
         /// 
@@ -63,7 +65,7 @@ namespace ActionCode.Cinemachine.Editor
         /// </summary>
         /// <param name="center">The center position to draw the button.</param>
         /// <param name="size">The size to draw the button.</param>
-        /// <param name="angle">The angle to draw the arrow.</param>
+        /// <param name="angle">The angle to draw the button.</param>
         /// <returns>True when the user clicks the button.</returns>
         public static bool ArrowButton(Vector2 center, Vector2 size, float angle)
         {
@@ -76,12 +78,38 @@ namespace ActionCode.Cinemachine.Editor
         /// Draws a rectangular arrow button with the given area and angle.
         /// </summary>
         /// <param name="area">Area to draw the button.</param>
-        /// <param name="angle">The angle to draw the arrow.</param>
+        /// <param name="angle">The angle to draw the button.</param>
         /// <returns>True when the user clicks the button.</returns>
         public static bool ArrowButton(Rect area, float angle)
         {
             var id = GUIUtility.GetControlID(ArrowButtonHash, FocusType.Passive);
             return Do(id, area, area, angle, DrawArrowHandleCap);
+        }
+
+        /// <summary>
+        /// Draws a cross arrow button with the given center, size and angle.
+        /// </summary>
+        /// <param name="center">The center position to draw the button.</param>
+        /// <param name="size">The size to draw the button.</param>
+        /// <param name="angle">The angle to draw the button.</param>
+        /// <returns>True when the user clicks the button.</returns>
+        public static bool CrossButton(Vector2 center, Vector2 size, float angle)
+        {
+            var position = center - Vector2.one * size * 0.5F;
+            var rectPos = new Rect(position, size);
+            return CrossButton(rectPos, angle);
+        }
+
+        /// <summary>
+        /// Draws a cross arrow button with the given area and angle.
+        /// </summary>
+        /// <param name="area">Area to draw the button.</param>
+        /// <param name="angle">The angle to draw the button.</param>
+        /// <returns>True when the user clicks the button.</returns>
+        public static bool CrossButton(Rect area, float angle)
+        {
+            var id = GUIUtility.GetControlID(CrossButtonHash, FocusType.Passive);
+            return Do(id, area, area, angle, DrawCrossHandleCap);
         }
 
         private static bool Do(int id, Rect area, Rect collision, float angle, DrawRectCapFunction drawFunction)
@@ -165,6 +193,21 @@ namespace ActionCode.Cinemachine.Editor
                 case (EventType.Repaint):
                     UpdateArrowHandlePointsCache(area, angle);
                     Handles.DrawPolyLine(ArrowHandlePointsCache);
+                    break;
+            }
+        }
+
+        private static void DrawCrossHandleCap(int controlID, Rect area, Rect collision, float angle, EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Layout:
+                case EventType.MouseMove:
+                    HandleUtility.AddControl(controlID, DistanceToRectangle(collision, angle));
+                    break;
+                case (EventType.Repaint):
+                    UpdateCrossHandlePointsCache(area, angle);
+                    Handles.DrawPolyLine(CrossHandlePointsCache);
                     break;
             }
         }
@@ -258,6 +301,36 @@ namespace ActionCode.Cinemachine.Editor
             }
 
             ArrowHandlePointsCache[7] = ArrowHandlePointsCache[0];
+        }
+
+        private static void UpdateCrossHandlePointsCache(Rect area, float angle)
+        {
+            var halfSize = area.size * 0.5F;
+            var quarterSize = halfSize * 0.5F;
+
+            CrossHandlePointsCache[0] = area.min + Vector2.up * quarterSize.y;
+            CrossHandlePointsCache[1] = area.min + Vector2.right * quarterSize.x;
+            CrossHandlePointsCache[2] = area.min + new Vector2(halfSize.x, quarterSize.y);
+            CrossHandlePointsCache[3] = CrossHandlePointsCache[1] + Vector3.right * halfSize.x;
+            CrossHandlePointsCache[4] = CrossHandlePointsCache[0] + Vector3.right * area.width;
+            CrossHandlePointsCache[5] = area.max - new Vector2(quarterSize.x, halfSize.y);
+            CrossHandlePointsCache[6] = area.max + Vector2.down * quarterSize.y;
+            CrossHandlePointsCache[7] = area.max + Vector2.left * quarterSize.x;
+            CrossHandlePointsCache[8] = CrossHandlePointsCache[2] + Vector3.up * halfSize.y;
+            CrossHandlePointsCache[9] = CrossHandlePointsCache[7] + Vector3.left * halfSize.x;
+            CrossHandlePointsCache[10] = CrossHandlePointsCache[0] + Vector3.up * halfSize.y;
+            CrossHandlePointsCache[11] = area.min + new Vector2(quarterSize.x, halfSize.y);
+
+            var applyRotation = Mathf.Abs(angle) > 0f;
+            if (applyRotation)
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    CrossHandlePointsCache[i] = RotateAroundPivot(CrossHandlePointsCache[i], area.center, angle);
+                }
+            }
+
+            CrossHandlePointsCache[12] = CrossHandlePointsCache[0];
         }
 
         private static Vector2 RotateAroundPivot(Vector2 point, Vector2 pivot, float angle)
