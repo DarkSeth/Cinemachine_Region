@@ -72,9 +72,21 @@ namespace ActionCode.Cinemachine
         /// <param name="area">The new region area.</param>
         public void Create(Rect area)
         {
-            var name = $"Region #{Count + 1}";
+            var name = $"Region #{Count}";
             var region = new Region(name, area);
             regions.Add(region);
+        }
+
+        /// <summary>
+        /// Removes the given region if present.
+        /// </summary>
+        /// <param name="region">Region to remove.</param>
+        public void Delete(Region region)
+        {
+            if (regions.Contains(region))
+            {
+                regions.Remove(region);
+            }
         }
 
         public Region this[int i]

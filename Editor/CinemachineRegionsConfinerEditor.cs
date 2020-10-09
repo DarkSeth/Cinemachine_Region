@@ -55,6 +55,7 @@ namespace ActionCode.Cinemachine.Editor
                 {
                     HandleCurrentRegion();
                     DrawCurrentRegionCreateButtons();
+                    DrawCurrentRegionDeleteButton();
                 }
                 overlayWindow.DisplayWindow(ref currentRegion);
             }
@@ -130,10 +131,19 @@ namespace ActionCode.Cinemachine.Editor
             }
         }
 
+        private void DrawCurrentRegionDeleteButton()
+        {
+            var size = Vector2.one * 2F;
+            var position = currentRegion.TopRightPos - size;
+            var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
+
+            if (deleteButtonDown) DeleteRegion();
+        }
+
         private void DrawCurrentRegionCreateButtons()
         {
             const float SKIN = 1.5F;
-            Vector2 size = Vector2.one * 2F;
+            var size = Vector2.one * 2F;
 
             var rightPos = currentRegion.CenterRightPos + Vector2.right * SKIN;
             var leftPos = currentRegion.CenterLeftPos + Vector2.left * SKIN;
@@ -182,6 +192,12 @@ namespace ActionCode.Cinemachine.Editor
             area.position += direction * distance;
             confiner.regionsData.Create(area);
             currentRegion = confiner.regionsData.Last;
+        }
+
+        private void DeleteRegion()
+        {
+            confiner.regionsData.Delete(currentRegion);
+            currentRegion = null;
         }
     }
 }

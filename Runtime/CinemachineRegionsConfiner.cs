@@ -31,6 +31,8 @@ namespace ActionCode.Cinemachine
             if (!HasRegions() || !isValidStage) return;
 
             UpdateCurrentRegionBound(vcam.Follow);
+            if (CurrentRegion == null) return;
+
             var isValidState = damping > 0 && deltaTime >= 0 &&
                 VirtualCamera.PreviousStateIsValid;
             var displacement = state.Lens.Orthographic ?
