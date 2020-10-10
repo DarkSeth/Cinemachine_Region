@@ -8,29 +8,27 @@ namespace ActionCode.Cinemachine.Editor
         public GUIContent Title { get; private set; }
 
         private readonly int Id;
+        private readonly CinemachineRegionsConfinerEditor regionsEditor;
         private readonly Vector2 ScenePanelSize = new Vector2(200F, 140F);
         private readonly Vector2 ScenePanelPadding = new Vector2(10F, 30F);
 
-        private Region region;
         private bool showBounds = true;
 
-        public RegionOverlaySceneWindow(string title = "Current Region")
+        public RegionOverlaySceneWindow(CinemachineRegionsConfinerEditor regionsEditor, string title = "Current Region")
         {
+            this.regionsEditor = regionsEditor;
             Id = typeof(RegionOverlaySceneWindow).GetHashCode();
             Title = EditorGUIUtility.TrTextContent(title);
         }
 
-        public void DisplayWindow(ref Region region)
+        public void DisplayWindow()
         {
-            this.region = region;
             var position = GetWindowsPosition();
-
             GUILayout.Window(Id, position, DisplayRegionContent, Title);
         }
 
         private Rect GetWindowsPosition()
         {
-            var sceneSize = SceneView.currentDrawingSceneView.position.size;
             return new Rect(ScenePanelPadding, ScenePanelSize);
         }
 
@@ -40,8 +38,16 @@ namespace ActionCode.Cinemachine.Editor
             GUILayout.BeginVertical();
             GUILayout.Space(10F);
 
-            DrawRegionFields();
-            DrawRegionBounds();
+            var hasRegion = regionsEditor.SelectedRegion != null;
+            if (hasRegion)
+            {
+                DrawRegionFields();
+                DrawRegionBounds();
+            }
+            else
+            {
+                DrawCreateRegionButton();
+            }
 
             GUILayout.EndVertical();
             Handles.EndGUI();
@@ -49,18 +55,17 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawRegionFields()
         {
-            var hasRegion = region != null;
+            regionsEditor.SelectedRegion.name = EditorGUILayout.TextField(regionsEditor.SelectedRegion.name);
+            regionsEditor.SelectedRegion.area = EditorGUILayout.RectField("Area", regionsEditor.SelectedRegion.area);
+        }
 
-            if (hasRegion)
-            {
-                region.name = EditorGUILayout.TextField(region.name);
-                region.area = EditorGUILayout.RectField("Area", region.area);
-            }
-            else
-            {
-                const string msg = "Select a Region to edit.";
-                EditorGUILayout.HelpBox(msg, MessageType.Info);
-            }
+        private void DrawCreateRegionButton()
+        {
+            const string msg = "No Region found.";
+            EditorGUILayout.HelpBox(msg, MessageType.Info);
+
+            var createRegion = GUILayout.Button("Create Region");
+            if (createRegion) regionsEditor.CreateFirstRegion();
         }
 
         private void DrawRegionBounds()
@@ -70,13 +75,13 @@ namespace ActionCode.Cinemachine.Editor
 
             EditorGUI.BeginDisabledGroup(true);
 
-            EditorGUILayout.Vector2Field("Top Left", region.TopLeftPos);
-            EditorGUILayout.Vector2Field("Top Right", region.TopRightPos);
+            EditorGUILayout.Vector2Field("Top Left", regionsEditor.SelectedRegion.TopLeftPos);
+            EditorGUILayout.Vector2Field("Top Right", regionsEditor.SelectedRegion.TopRightPos);
 
-            EditorGUILayout.Vector2Field("Center", region.CenterPos);
+            EditorGUILayout.Vector2Field("Center", regionsEditor.SelectedRegion.CenterPos);
 
-            EditorGUILayout.Vector2Field("Bottom Left", region.BottomLeftPos);
-            EditorGUILayout.Vector2Field("Bottom Right", region.BottomRightPos);
+            EditorGUILayout.Vector2Field("Bottom Left", regionsEditor.SelectedRegion.BottomLeftPos);
+            EditorGUILayout.Vector2Field("Bottom Right", regionsEditor.SelectedRegion.BottomRightPos);
 
             EditorGUI.EndDisabledGroup();
         }

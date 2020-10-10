@@ -7,6 +7,11 @@ namespace ActionCode.Cinemachine.Editor
     [CustomEditor(typeof(CinemachineRegionsConfiner))]
     public class CinemachineRegionsConfinerEditor : UnityEditor.Editor
     {
+        /// <summary>
+        /// Current selected region. 
+        /// </summary>
+        public Region SelectedRegion { get; private set; }
+
         private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
 
         private CinemachineRegionsConfiner confiner;
@@ -15,12 +20,10 @@ namespace ActionCode.Cinemachine.Editor
         private GUIStyle sceneLabelStyle;
         private BoxBoundsHandle currentRegionHandle;
 
-        private Region currentRegion;
-
         private void OnEnable()
         {
             confiner = (CinemachineRegionsConfiner)target;
-            overlayWindow = new RegionOverlaySceneWindow();
+            overlayWindow = new RegionOverlaySceneWindow(this);
 
             currentRegionHandle = new BoxBoundsHandle
             {
@@ -29,7 +32,7 @@ namespace ActionCode.Cinemachine.Editor
 
             if (confiner.HasRegions())
             {
-                currentRegion = confiner.regionsData.First;
+                SelectedRegion = confiner.regionsData.First;
             }
 
             InitializeGUIStyles();
@@ -50,15 +53,40 @@ namespace ActionCode.Cinemachine.Editor
             if (confiner.HasRegions())
             {
                 DrawRegions();
-                var hasCurrentRegion = currentRegion != null;
+                var hasCurrentRegion = SelectedRegion != null;
                 if (hasCurrentRegion)
                 {
                     HandleCurrentRegion();
                     DrawCurrentRegionCreateButtons();
                     DrawCurrentRegionDeleteButton();
                 }
-                overlayWindow.DisplayWindow(ref currentRegion);
+                overlayWindow.DisplayWindow();
             }
+        }
+
+        internal void CreateFirstRegion()
+        {
+            if (!confiner.HasRegions()) return;
+
+            Rect area;
+            var camera = Camera.main;
+            if (camera)
+            {
+                const float SKIN = 0.8f;
+                Vector2 bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
+                Vector2 topRightPos = camera.ViewportToWorldPoint(Vector2.one);
+
+                // Expand
+                bottomLeftPos -= Vector2.one * SKIN;
+                topRightPos += Vector2.one * SKIN;
+
+                var size = topRightPos - bottomLeftPos;
+                area = new Rect(bottomLeftPos, size);
+            }
+            else area = new Rect(-20, -10, 40, 20);
+
+            confiner.regionsData.Create(area);
+            SelectedRegion = confiner.regionsData.First;
         }
 
         private void InitializeGUIStyles()
@@ -88,13 +116,11 @@ namespace ActionCode.Cinemachine.Editor
             var isValid = path.Length > 0;
             if (isValid)
             {
-                var area = new Rect(-20, -10, 40, 20);
-                data.Create(area);
-
                 AssetDatabase.CreateAsset(data, path);
                 AssetDatabase.Refresh();
 
                 confiner.regionsData = AssetDatabase.LoadAssetAtPath<RegionsData>(path);
+                CreateFirstRegion();
             }
         }
 
@@ -108,7 +134,7 @@ namespace ActionCode.Cinemachine.Editor
                 Handles.Label(region.TopLeftPos, region.name, sceneLabelStyle);
 
                 var selectRegion = HandlesButton.RectButton(region.area);
-                if (selectRegion) currentRegion = region;
+                if (selectRegion) SelectedRegion = region;
             }
 
             Handles.color = lastHandlesColor;
@@ -116,8 +142,8 @@ namespace ActionCode.Cinemachine.Editor
 
         private void HandleCurrentRegion()
         {
-            currentRegionHandle.center = currentRegion.area.center;
-            currentRegionHandle.size = currentRegion.area.size;
+            currentRegionHandle.center = SelectedRegion.area.center;
+            currentRegionHandle.size = SelectedRegion.area.size;
 
             EditorGUI.BeginChangeCheck();
             currentRegionHandle.DrawHandle();
@@ -126,15 +152,15 @@ namespace ActionCode.Cinemachine.Editor
             if (hasChanges)
             {
                 // This order is important
-                currentRegion.area.size = currentRegionHandle.size;
-                currentRegion.area.center = currentRegionHandle.center;
+                SelectedRegion.area.size = currentRegionHandle.size;
+                SelectedRegion.area.center = currentRegionHandle.center;
             }
         }
 
         private void DrawCurrentRegionDeleteButton()
         {
             var size = Vector2.one * 2F;
-            var position = currentRegion.TopRightPos - size;
+            var position = SelectedRegion.TopRightPos - size;
             var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
 
             if (deleteButtonDown) DeleteRegion();
@@ -145,10 +171,10 @@ namespace ActionCode.Cinemachine.Editor
             const float SKIN = 1.5F;
             var size = Vector2.one * 2F;
 
-            var rightPos = currentRegion.CenterRightPos + Vector2.right * SKIN;
-            var leftPos = currentRegion.CenterLeftPos + Vector2.left * SKIN;
-            var topPos = currentRegion.TopPos + Vector2.up * SKIN;
-            var bottomPos = currentRegion.BottomPos + Vector2.down * SKIN;
+            var rightPos = SelectedRegion.CenterRightPos + Vector2.right * SKIN;
+            var leftPos = SelectedRegion.CenterLeftPos + Vector2.left * SKIN;
+            var topPos = SelectedRegion.TopPos + Vector2.up * SKIN;
+            var bottomPos = SelectedRegion.BottomPos + Vector2.down * SKIN;
 
             var isRightButtonAvailable = !confiner.regionsData.Contains(rightPos);
             var isLeftButtonAvailable = !confiner.regionsData.Contains(leftPos);
@@ -170,34 +196,34 @@ namespace ActionCode.Cinemachine.Editor
 
             if (rightButtonDown)
             {
-                CreateRegion(Vector2.right, currentRegion.area.width);
+                CreateRegion(Vector2.right, SelectedRegion.area.width);
             }
             else if (leftButtonDown)
             {
-                CreateRegion(Vector2.left, currentRegion.area.width);
+                CreateRegion(Vector2.left, SelectedRegion.area.width);
             }
             else if (topButtonDown)
             {
-                CreateRegion(Vector2.up, currentRegion.area.height);
+                CreateRegion(Vector2.up, SelectedRegion.area.height);
             }
             else if (bottomButtonDown)
             {
-                CreateRegion(Vector2.down, currentRegion.area.height);
+                CreateRegion(Vector2.down, SelectedRegion.area.height);
             }
         }
 
         private void CreateRegion(Vector2 direction, float distance)
         {
-            var area = new Rect(currentRegion.area);
+            var area = new Rect(SelectedRegion.area);
             area.position += direction * distance;
             confiner.regionsData.Create(area);
-            currentRegion = confiner.regionsData.Last;
+            SelectedRegion = confiner.regionsData.Last;
         }
 
         private void DeleteRegion()
         {
-            confiner.regionsData.Delete(currentRegion);
-            currentRegion = null;
+            confiner.regionsData.Delete(SelectedRegion);
+            SelectedRegion = null;
         }
     }
 }
