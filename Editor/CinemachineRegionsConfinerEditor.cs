@@ -4,6 +4,9 @@ using UnityEditor.IMGUI.Controls;
 
 namespace ActionCode.Cinemachine.Editor
 {
+    /// <summary>
+    /// Custom editor for <see cref="CinemachineRegionsConfiner"/>.
+    /// </summary>
     [CustomEditor(typeof(CinemachineRegionsConfiner))]
     public class CinemachineRegionsConfinerEditor : UnityEditor.Editor
     {
@@ -30,7 +33,7 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
-            if (confiner.HasRegions())
+            if (confiner.HasRegionsData())
             {
                 SelectedRegion = confiner.regionsData.First;
             }
@@ -42,7 +45,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             base.OnInspectorGUI();
 
-            if (!confiner.HasRegions())
+            if (!confiner.HasRegionsData())
             {
                 DrawCreateRegionsDataButton();
             }
@@ -50,7 +53,7 @@ namespace ActionCode.Cinemachine.Editor
 
         private void OnSceneGUI()
         {
-            if (confiner.HasRegions())
+            if (confiner.HasRegionsData())
             {
                 DrawRegions();
                 var hasCurrentRegion = SelectedRegion != null;
@@ -66,7 +69,7 @@ namespace ActionCode.Cinemachine.Editor
 
         internal void CreateFirstRegion()
         {
-            if (!confiner.HasRegions()) return;
+            if (!confiner.HasRegionsData()) return;
 
             Rect area;
             var camera = Camera.main;

@@ -3,8 +3,15 @@ using UnityEngine;
 
 namespace ActionCode.Cinemachine.Editor
 {
+    /// <summary>
+    /// Region overlay window.
+    /// Draws a Window containing a Region information over the scene view.
+    /// </summary>
     public class RegionOverlaySceneWindow
     {
+        /// <summary>
+        /// The window title.
+        /// </summary>
         public GUIContent Title { get; private set; }
 
         private readonly int Id;

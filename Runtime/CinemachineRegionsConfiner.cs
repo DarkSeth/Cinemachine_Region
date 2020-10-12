@@ -4,6 +4,10 @@ using Cinemachine.Utility;
 
 namespace ActionCode.Cinemachine
 {
+    /// <summary>
+    /// Confiner extension for multiple regions.
+    /// <para>The VirtualCamera will transition between them according.</para>
+    /// </summary>
     [ExecuteAlways]
     public sealed class CinemachineRegionsConfiner : CinemachineExtension
     {
@@ -13,10 +17,19 @@ namespace ActionCode.Cinemachine
         [SerializeField, Tooltip("Transition speed between regions.")]
         private float transitionSpeed = 0.6F;
 
+        /// <summary>
+        /// The current region that target is inside.
+        /// </summary>
         public Region CurrentRegion { get; private set; }
 
+        /// <summary>
+        /// The last region that target was inside.
+        /// </summary>
         public Region LastRegion { get; private set; }
 
+        /// <summary>
+        /// Whether a transition is in place.
+        /// </summary>
         public bool IsTransition { get; private set; }
 
         /// <summary>
@@ -32,7 +45,11 @@ namespace ActionCode.Cinemachine
 
         private const float MIN_TRANSITION_SPEED = 0.1F;
 
-        public bool HasRegions()
+        /// <summary>
+        /// Whether regions data is set.
+        /// </summary>
+        /// <returns></returns>
+        public bool HasRegionsData()
         {
             return regionsData != null;
         }
@@ -43,7 +60,7 @@ namespace ActionCode.Cinemachine
             ref CameraState state, float deltaTime)
         {
             var isValidStage = stage == CinemachineCore.Stage.Finalize || stage == CinemachineCore.Stage.Body;
-            if (!HasRegions() || !isValidStage) return;
+            if (!HasRegionsData() || !isValidStage) return;
 
             LastRegion = CurrentRegion;
             UpdateCurrentRegion(vcam.Follow);
