@@ -5,17 +5,32 @@ using Cinemachine.Utility;
 namespace ActionCode.Cinemachine
 {
     [ExecuteAlways]
-    public class CinemachineRegionsConfiner : CinemachineExtension
+    public sealed class CinemachineRegionsConfiner : CinemachineExtension
     {
         [Tooltip("The regions which the camera is to be contained.")]
         public RegionsData regionsData;
-        [Range(0F, 10F)]
-        [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.")]
-        public float damping = 0F;
+        [Min(MIN_TRANSITION_SPEED)]
+        [SerializeField, Tooltip("Transition speed between regions.")]
+        private float transitionSpeed = 0.6F;
 
         public Region CurrentRegion { get; private set; }
 
-        private Vector3 previousDisplacement;
+        public Region LastRegion { get; private set; }
+
+        public bool IsTransition { get; private set; }
+
+        /// <summary>
+        /// Transition speed between regions.
+        /// </summary>
+        public float TransitionSpeed
+        {
+            get => transitionSpeed;
+            set => transitionSpeed = Mathf.Max(MIN_TRANSITION_SPEED, value);
+        }
+
+        private float transitionStep;
+
+        private const float MIN_TRANSITION_SPEED = 0.1F;
 
         public bool HasRegions()
         {
@@ -30,27 +45,49 @@ namespace ActionCode.Cinemachine
             var isValidStage = stage == CinemachineCore.Stage.Finalize || stage == CinemachineCore.Stage.Body;
             if (!HasRegions() || !isValidStage) return;
 
-            UpdateCurrentRegionBound(vcam.Follow);
+            LastRegion = CurrentRegion;
+            UpdateCurrentRegion(vcam.Follow);
+
             if (CurrentRegion == null) return;
 
-            var isValidState = damping > 0 && deltaTime >= 0 &&
+            var isDifferentRegion = LastRegion != null &&
+                CurrentRegion != LastRegion;
+            var isValidState = deltaTime >= 0 &&
                 VirtualCamera.PreviousStateIsValid;
+            var beginRegionTransition = isDifferentRegion &&
+                isValidState &&
+                Application.isPlaying;
             var displacement = state.Lens.Orthographic ?
                 ConfineScreenEdges(ref state) :
                 ConfinePoint(state.CorrectedPosition);
 
-            if (isValidState)
+            if (beginRegionTransition) BeginRegionTransition();
+
+            if (IsTransition)
             {
-                Vector3 delta = displacement - previousDisplacement;
-                delta = Damper.Damp(delta, damping, deltaTime);
-                displacement = previousDisplacement + delta;
+                displacement = Vector3.Lerp(Vector3.zero, displacement, transitionStep);
+                transitionStep += transitionSpeed * deltaTime;
+
+                IsTransition = transitionStep < 1F;
+                if (!IsTransition) StopRegionTransition();
             }
 
-            previousDisplacement = displacement;
             state.PositionCorrection += displacement;
         }
 
-        private void UpdateCurrentRegionBound(Transform target)
+        private void BeginRegionTransition()
+        {
+            IsTransition = true;
+            transitionStep = 0F;
+        }
+
+        private void StopRegionTransition()
+        {
+            IsTransition = false;
+            transitionStep = 0F;
+        }
+
+        private void UpdateCurrentRegion(Transform target)
         {
             if (regionsData.IsEmpty() || target == null)
             {
