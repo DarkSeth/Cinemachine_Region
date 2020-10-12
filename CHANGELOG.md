@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Add
+- OnChangedRegion event
 - Region transition logic
 - Selectable regions on Scene window
 - CinemachineRegionsConfiner extension

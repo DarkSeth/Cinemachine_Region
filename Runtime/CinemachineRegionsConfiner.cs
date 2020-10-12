@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Cinemachine;
 using Cinemachine.Utility;
+using UnityEngine.Events;
 
 namespace ActionCode.Cinemachine
 {
@@ -40,6 +41,12 @@ namespace ActionCode.Cinemachine
             get => transitionSpeed;
             set => transitionSpeed = Mathf.Max(MIN_TRANSITION_SPEED, value);
         }
+
+        /// <summary>
+        /// Unity event fired when a transition between scenes has completed.
+        /// <para>The first argument is the last Region and the second is the current one.</para>
+        /// </summary>
+        public UnityAction<Region, Region> OnRegionChanged;
 
         private float transitionStep;
 
@@ -102,6 +109,11 @@ namespace ActionCode.Cinemachine
         {
             IsTransition = false;
             transitionStep = 0F;
+
+            if (OnRegionChanged != null)
+            {
+                OnRegionChanged.Invoke(LastRegion, CurrentRegion);
+            }
         }
 
         private void UpdateCurrentRegion(Transform target)
