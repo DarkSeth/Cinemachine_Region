@@ -81,5 +81,42 @@ namespace ActionCode.Cinemachine
         public Vector2 BottomPos => CenterPos + Vector2.down * area.height * 0.5F;
 
         public Vector2 BottomLeftPos => area.min;
+
+        /// <summary>
+        /// Vertical maximum position.
+        /// </summary>
+        public float Top
+        {
+            get { return area.yMax; }
+            set { area.yMax = value; }
+        }
+
+        /// <summary>
+        /// Vertical minimum position.
+        /// </summary>
+        public float Bottom
+        {
+            get { return area.yMin; }
+            set { area.yMin = value; }
+        }
+
+
+        /// <summary>
+        /// Horizontal minimum position.
+        /// </summary>
+        public float Left
+        {
+            get { return area.xMin; }
+            set { area.xMin = value; }
+        }
+
+        /// <summary>
+        /// Horizontal maximum position.
+        /// </summary>
+        public float Right
+        {
+            get { return area.xMax; }
+            set { area.xMax = value; }
+        }
     }
 }
