@@ -119,7 +119,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             var data = CreateInstance<RegionsData>();
             var path = EditorUtility.SaveFilePanelInProject(
-                "New Regions Data", "NewRegionsData", "asset", string.Empty, "/Scenes");
+                "New Regions Data", "NewRegionsData", "asset", string.Empty, "Assets/Scenes");
             var isValid = path.Length > 0;
             if (isValid)
             {
