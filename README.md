@@ -9,11 +9,35 @@
 
 ## How to Use
 
-TODO
+If you didn't already, add a ```CinemachineVirtualCamera``` script to a GameObject. In the **Extension** section, add ```CinemachineRegionsConfiner``` extension.
 
 ## Installation
 
-TODO
+### Using the Package Registry Server
+
+Open the **manifest.json** file inside your Unity project's **Packages** folder and add this code-block before `dependencies` attribute:
+
+```json
+"scopedRegistries": [ 
+    { 
+        "name": "Action Code", 
+        "url": "http://34.83.179.179:4873/", 
+        "scopes": [ "com.actioncode" ] 
+    } 
+],
+```
+
+The package **ActionCode-<PACKAGE>** will be available for you to install using the **Package Manager** windows.
+
+### Using the Git URL
+
+You will need a **Git client** installed on your computer with the Path variable already set. 
+
+Use the **Package Manager** "Add package from git URL..." feature or add manually this line inside `dependencies` attribute: 
+
+```json
+"com.actioncode.<PACKAGE>":"https://bitbucket.org/nostgameteam/<package_url>.git"
+```
 
 ---
 
