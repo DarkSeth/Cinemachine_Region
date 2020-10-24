@@ -61,6 +61,11 @@ namespace ActionCode.Cinemachine
             return regionsData != null;
         }
 
+        public bool HasRegions()
+        {
+            return HasRegionsData() && !regionsData.IsEmpty();
+        }
+
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage,

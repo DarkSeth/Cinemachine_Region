@@ -43,12 +43,15 @@ namespace ActionCode.Cinemachine.Editor
             GUILayout.BeginVertical();
             GUILayout.Space(10F);
 
-            var hasRegion = regionsEditor.SelectedRegion != null;
-            if (hasRegion)
+            if (regionsEditor.HasRegions())
             {
-                DrawRegionFields();
-                GUILayout.Space(10F);
-                DrawRegionWorldPositions();
+                var hasSelectedRegion = regionsEditor.selectedRegion != null;
+                if (hasSelectedRegion)
+                {
+                    DrawRegionFields();
+                    GUILayout.Space(10F);
+                    DrawRegionWorldPositions();
+                }
             }
             else
             {
@@ -61,8 +64,8 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawRegionFields()
         {
-            regionsEditor.SelectedRegion.name = EditorGUILayout.TextField(regionsEditor.SelectedRegion.name);
-            regionsEditor.SelectedRegion.area = EditorGUILayout.RectField("Area", regionsEditor.SelectedRegion.area);
+            regionsEditor.selectedRegion.name = EditorGUILayout.TextField(regionsEditor.selectedRegion.name);
+            regionsEditor.selectedRegion.area = EditorGUILayout.RectField("Area", regionsEditor.selectedRegion.area);
         }
 
         private void DrawCreateRegionButton()
@@ -81,13 +84,13 @@ namespace ActionCode.Cinemachine.Editor
             EditorGUIUtility.labelWidth = 50F;
 
             EditorGUILayout.BeginHorizontal();
-            regionsEditor.SelectedRegion.Top = EditorGUILayout.FloatField("Top", regionsEditor.SelectedRegion.Top);
-            regionsEditor.SelectedRegion.Bottom = EditorGUILayout.FloatField("Bottom", regionsEditor.SelectedRegion.Bottom);
+            regionsEditor.selectedRegion.Top = EditorGUILayout.FloatField("Top", regionsEditor.selectedRegion.Top);
+            regionsEditor.selectedRegion.Bottom = EditorGUILayout.FloatField("Bottom", regionsEditor.selectedRegion.Bottom);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            regionsEditor.SelectedRegion.Left = EditorGUILayout.FloatField("Left", regionsEditor.SelectedRegion.Left);
-            regionsEditor.SelectedRegion.Right = EditorGUILayout.FloatField("Right", regionsEditor.SelectedRegion.Right);
+            regionsEditor.selectedRegion.Left = EditorGUILayout.FloatField("Left", regionsEditor.selectedRegion.Left);
+            regionsEditor.selectedRegion.Right = EditorGUILayout.FloatField("Right", regionsEditor.selectedRegion.Right);
             EditorGUILayout.EndHorizontal();
 
             // Resets the value.

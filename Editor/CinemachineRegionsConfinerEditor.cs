@@ -13,7 +13,7 @@ namespace ActionCode.Cinemachine.Editor
         /// <summary>
         /// Current selected region. 
         /// </summary>
-        public Region SelectedRegion { get; private set; }
+        public Region selectedRegion;
 
         private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
 
@@ -33,11 +33,9 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
-            if (confiner.HasRegionsData())
-            {
-                SelectedRegion = confiner.regionsData.First;
-            }
+            selectedRegion = HasRegions() ? confiner.regionsData.First : null;
 
+            SaveData();
             InitializeGUIStyles();
         }
 
@@ -53,18 +51,19 @@ namespace ActionCode.Cinemachine.Editor
 
         private void OnSceneGUI()
         {
-            if (confiner.HasRegionsData())
+            if (confiner.HasRegions())
             {
                 DrawRegions();
-                var hasCurrentRegion = SelectedRegion != null;
+                var hasCurrentRegion = selectedRegion != null;
                 if (hasCurrentRegion)
                 {
                     HandleCurrentRegion();
                     DrawCurrentRegionCreateButtons();
                     DrawCurrentRegionDeleteButton();
                 }
-                overlayWindow.DisplayWindow();
             }
+
+            overlayWindow.DisplayWindow();
         }
 
         internal void CreateFirstRegion()
@@ -89,7 +88,12 @@ namespace ActionCode.Cinemachine.Editor
             else area = new Rect(-20, -10, 40, 20);
 
             confiner.regionsData.Create(area);
-            SelectedRegion = confiner.regionsData.First;
+            selectedRegion = confiner.regionsData.First;
+        }
+
+        internal bool HasRegions()
+        {
+            return confiner.HasRegions();
         }
 
         private void InitializeGUIStyles()
@@ -137,7 +141,11 @@ namespace ActionCode.Cinemachine.Editor
                 Handles.Label(region.TopLeftPos, region.name, sceneLabelStyle);
 
                 var selectRegion = HandlesButton.RectButton(region.area);
-                if (selectRegion) SelectedRegion = region;
+                if (selectRegion)
+                {
+                    SaveData();
+                    selectedRegion = region;
+                }
             }
 
             Handles.color = lastHandlesColor;
@@ -145,8 +153,8 @@ namespace ActionCode.Cinemachine.Editor
 
         private void HandleCurrentRegion()
         {
-            currentRegionHandle.center = SelectedRegion.area.center;
-            currentRegionHandle.size = SelectedRegion.area.size;
+            currentRegionHandle.center = selectedRegion.area.center;
+            currentRegionHandle.size = selectedRegion.area.size;
 
             EditorGUI.BeginChangeCheck();
             currentRegionHandle.DrawHandle();
@@ -155,15 +163,16 @@ namespace ActionCode.Cinemachine.Editor
             if (hasChanges)
             {
                 // This order is important
-                SelectedRegion.area.size = currentRegionHandle.size;
-                SelectedRegion.area.center = currentRegionHandle.center;
+                selectedRegion.area.size = currentRegionHandle.size;
+                selectedRegion.area.center = currentRegionHandle.center;
+                //SaveRegionsData();
             }
         }
 
         private void DrawCurrentRegionDeleteButton()
         {
             var size = Vector2.one * 2F;
-            var position = SelectedRegion.TopRightPos - size;
+            var position = selectedRegion.TopRightPos - size;
             var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
 
             if (deleteButtonDown) DeleteRegion();
@@ -174,10 +183,10 @@ namespace ActionCode.Cinemachine.Editor
             const float SKIN = 1.5F;
             var size = Vector2.one * 2F;
 
-            var rightPos = SelectedRegion.CenterRightPos + Vector2.right * SKIN;
-            var leftPos = SelectedRegion.CenterLeftPos + Vector2.left * SKIN;
-            var topPos = SelectedRegion.TopPos + Vector2.up * SKIN;
-            var bottomPos = SelectedRegion.BottomPos + Vector2.down * SKIN;
+            var rightPos = selectedRegion.CenterRightPos + Vector2.right * SKIN;
+            var leftPos = selectedRegion.CenterLeftPos + Vector2.left * SKIN;
+            var topPos = selectedRegion.TopPos + Vector2.up * SKIN;
+            var bottomPos = selectedRegion.BottomPos + Vector2.down * SKIN;
 
             var isRightButtonAvailable = !confiner.regionsData.Contains(rightPos);
             var isLeftButtonAvailable = !confiner.regionsData.Contains(leftPos);
@@ -199,34 +208,45 @@ namespace ActionCode.Cinemachine.Editor
 
             if (rightButtonDown)
             {
-                CreateRegion(Vector2.right, SelectedRegion.area.width);
+                CreateRegion(Vector2.right, selectedRegion.area.width);
             }
             else if (leftButtonDown)
             {
-                CreateRegion(Vector2.left, SelectedRegion.area.width);
+                CreateRegion(Vector2.left, selectedRegion.area.width);
             }
             else if (topButtonDown)
             {
-                CreateRegion(Vector2.up, SelectedRegion.area.height);
+                CreateRegion(Vector2.up, selectedRegion.area.height);
             }
             else if (bottomButtonDown)
             {
-                CreateRegion(Vector2.down, SelectedRegion.area.height);
+                CreateRegion(Vector2.down, selectedRegion.area.height);
             }
         }
 
         private void CreateRegion(Vector2 direction, float distance)
         {
-            var area = new Rect(SelectedRegion.area);
+            SaveData();
+            var area = new Rect(selectedRegion.area);
             area.position += direction * distance;
             confiner.regionsData.Create(area);
-            SelectedRegion = confiner.regionsData.Last;
+            selectedRegion = confiner.regionsData.Last;
         }
 
         private void DeleteRegion()
         {
-            confiner.regionsData.Delete(SelectedRegion);
-            SelectedRegion = null;
+            SaveData();
+            confiner.regionsData.Delete(selectedRegion);
+            selectedRegion = null;
+        }
+
+        private void SaveData()
+        {
+            Undo.RecordObject(this, "Modify Cinemachine Regions Confiner Editor data");
+            if (confiner.HasRegionsData())
+            {
+                Undo.RecordObject(confiner.regionsData, "Modify Regions data");
+            }
         }
     }
 }
