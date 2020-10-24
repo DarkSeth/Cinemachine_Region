@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.0-preview.0] - 2020-10-24
 ### Add
+- Editable regions on Scene window
 - OnChangedRegion event
 - Region transition logic
 - Selectable regions on Scene window
@@ -16,3 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LICENSE
 - README
 - .gitignore
+
+[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/1.0.0-preview.0%0Dmaster
+[1.0.0-preview.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.0/
