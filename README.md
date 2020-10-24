@@ -27,7 +27,7 @@ Open the **manifest.json** file inside your Unity project's **Packages** folder 
 ],
 ```
 
-The package **ActionCode-<PACKAGE>** will be available for you to install using the **Package Manager** windows.
+The package **ActionCode-Cinemachine Regions** will be available for you to install using the **Package Manager** windows.
 
 ### Using the Git URL
 
@@ -36,7 +36,7 @@ You will need a **Git client** installed on your computer with the Path variable
 Use the **Package Manager** "Add package from git URL..." feature or add manually this line inside `dependencies` attribute: 
 
 ```json
-"com.actioncode.<PACKAGE>":"https://bitbucket.org/nostgameteam/<package_url>.git"
+"com.actioncode.cinemachine-regions":"https://bitbucket.org/nostgameteam/cinemachine-regions.git"
 ```
 
 ---
