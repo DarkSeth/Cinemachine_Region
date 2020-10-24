@@ -61,7 +61,11 @@ namespace ActionCode.Cinemachine
             return regionsData != null;
         }
 
-        public bool HasRegions()
+        /// <summary>
+        /// Whether regions data is not empty.
+        /// </summary>
+        /// <returns></returns>
+        public bool ContainsRegions()
         {
             return HasRegionsData() && !regionsData.IsEmpty();
         }

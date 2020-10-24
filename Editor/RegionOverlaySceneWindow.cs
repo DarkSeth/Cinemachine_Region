@@ -43,19 +43,13 @@ namespace ActionCode.Cinemachine.Editor
             GUILayout.BeginVertical();
             GUILayout.Space(10F);
 
-            if (regionsEditor.HasRegions())
+            regionsEditor.DrawExtraInspectorGUI();
+
+            if (regionsEditor.HasSelectedRegion())
             {
-                var hasSelectedRegion = regionsEditor.selectedRegion != null;
-                if (hasSelectedRegion)
-                {
-                    DrawRegionFields();
-                    GUILayout.Space(10F);
-                    DrawRegionWorldPositions();
-                }
-            }
-            else
-            {
-                DrawCreateRegionButton();
+                DrawRegionFields();
+                GUILayout.Space(10F);
+                DrawRegionWorldPositions();
             }
 
             GUILayout.EndVertical();
@@ -66,15 +60,6 @@ namespace ActionCode.Cinemachine.Editor
         {
             regionsEditor.selectedRegion.name = EditorGUILayout.TextField(regionsEditor.selectedRegion.name);
             regionsEditor.selectedRegion.area = EditorGUILayout.RectField("Area", regionsEditor.selectedRegion.area);
-        }
-
-        private void DrawCreateRegionButton()
-        {
-            const string msg = "No Region found.";
-            EditorGUILayout.HelpBox(msg, MessageType.Info);
-
-            var createRegion = GUILayout.Button("Create Region");
-            if (createRegion) regionsEditor.CreateFirstRegion();
         }
 
         private void DrawRegionWorldPositions()

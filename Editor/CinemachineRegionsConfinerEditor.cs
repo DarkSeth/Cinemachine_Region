@@ -17,11 +17,10 @@ namespace ActionCode.Cinemachine.Editor
 
         private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
 
-        private CinemachineRegionsConfiner confiner;
-        private RegionOverlaySceneWindow overlayWindow;
-
         private GUIStyle sceneLabelStyle;
+        private CinemachineRegionsConfiner confiner;
         private BoxBoundsHandle currentRegionHandle;
+        private RegionOverlaySceneWindow overlayWindow;
 
         private void OnEnable()
         {
@@ -33,7 +32,7 @@ namespace ActionCode.Cinemachine.Editor
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
 
-            selectedRegion = HasRegions() ? confiner.regionsData.First : null;
+            selectedRegion = confiner.ContainsRegions() ? confiner.regionsData.First : null;
 
             SaveData();
             InitializeGUIStyles();
@@ -42,16 +41,12 @@ namespace ActionCode.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
-            if (!confiner.HasRegionsData())
-            {
-                DrawCreateRegionsDataButton();
-            }
+            DrawExtraInspectorGUI();
         }
 
         private void OnSceneGUI()
         {
-            if (confiner.HasRegions())
+            if (confiner.ContainsRegions())
             {
                 DrawRegions();
                 var hasCurrentRegion = selectedRegion != null;
@@ -66,7 +61,44 @@ namespace ActionCode.Cinemachine.Editor
             overlayWindow.DisplayWindow();
         }
 
-        internal void CreateFirstRegion()
+        /// <summary>
+        /// Whether has a selected region.
+        /// </summary>
+        /// <returns></returns>
+        public bool HasSelectedRegion()
+        {
+            return confiner.ContainsRegions() && selectedRegion != null;
+        }
+
+        internal void DrawExtraInspectorGUI()
+        {
+            if (!confiner.HasRegionsData())
+            {
+                DrawCreateRegionsDataButton();
+            }
+            else if (!confiner.ContainsRegions())
+            {
+                DrawCreateFirstRegionButton();
+            }
+        }
+
+        private void DrawCreateRegionsDataButton()
+        {
+            if (GUILayout.Button("Create Regions Data"))
+            {
+                CreateRegionsData();
+            }
+        }
+
+        private void DrawCreateFirstRegionButton()
+        {
+            if (GUILayout.Button("Create First Region"))
+            {
+                CreateFirstRegion();
+            }
+        }
+
+        private void CreateFirstRegion()
         {
             if (!confiner.HasRegionsData()) return;
 
@@ -91,30 +123,6 @@ namespace ActionCode.Cinemachine.Editor
             selectedRegion = confiner.regionsData.First;
         }
 
-        internal bool HasRegions()
-        {
-            return confiner.HasRegions();
-        }
-
-        private void InitializeGUIStyles()
-        {
-            sceneLabelStyle = new GUIStyle()
-            {
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.LowerLeft,
-                fontSize = 16
-            };
-            sceneLabelStyle.normal.textColor = REGIONS_COLOR;
-        }
-
-        private void DrawCreateRegionsDataButton()
-        {
-            if (GUILayout.Button("Create New Regions"))
-            {
-                CreateRegionsData();
-            }
-        }
-
         private void CreateRegionsData()
         {
             var data = CreateInstance<RegionsData>();
@@ -129,6 +137,17 @@ namespace ActionCode.Cinemachine.Editor
                 confiner.regionsData = AssetDatabase.LoadAssetAtPath<RegionsData>(path);
                 CreateFirstRegion();
             }
+        }
+
+        private void InitializeGUIStyles()
+        {
+            sceneLabelStyle = new GUIStyle()
+            {
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.LowerLeft,
+                fontSize = 16
+            };
+            sceneLabelStyle.normal.textColor = REGIONS_COLOR;
         }
 
         private void DrawRegions()
