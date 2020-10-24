@@ -20,5 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README
 - .gitignore
 
-[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/1.0.0-preview.0%0Dmaster
+[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.0.0-preview.0
 [1.0.0-preview.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.0/
