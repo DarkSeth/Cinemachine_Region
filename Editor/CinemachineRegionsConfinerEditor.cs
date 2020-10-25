@@ -132,8 +132,10 @@ namespace ActionCode.Cinemachine.Editor
         private void CreateRegionsData()
         {
             var data = CreateInstance<RegionsData>();
-            var path = EditorUtility.SaveFilePanelInProject(
-                "New Regions Data", "NewRegionsData", "asset", string.Empty, "Assets/Scenes");
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var scenePath = scene != null ? System.IO.Path.GetDirectoryName(scene.path) : "Assets/Scenes";
+            var name = $"{scene.name}-Regions";
+            var path = EditorUtility.SaveFilePanelInProject("New Regions Data", name, "asset", string.Empty, scenePath);
             var isValid = path.Length > 0;
             if (isValid)
             {
