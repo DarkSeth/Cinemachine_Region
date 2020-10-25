@@ -207,7 +207,7 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawCurrentRegionCreateButtons()
         {
-            const float SKIN = 1.5F;
+            const float SKIN = 2F;
             var size = Vector2.one * 2F;
 
             var rightPos = selectedRegion.CenterRightPos + Vector2.right * SKIN;
