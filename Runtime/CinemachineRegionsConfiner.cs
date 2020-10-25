@@ -90,9 +90,7 @@ namespace ActionCode.Cinemachine
             var beginRegionTransition = isDifferentRegion &&
                 isValidState &&
                 Application.isPlaying;
-            var displacement = state.Lens.Orthographic ?
-                ConfineScreenEdges(ref state) :
-                ConfinePoint(state.CorrectedPosition);
+            var displacement = ConfineScreenEdges(ref state);
 
             if (beginRegionTransition) BeginRegionTransition();
 
@@ -163,11 +161,13 @@ namespace ActionCode.Cinemachine
             CurrentRegion = regionsData[selectedIndex];
         }
 
-        // Camera must be orthographic
         private Vector3 ConfineScreenEdges(ref CameraState state)
         {
             Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
-            float dy = state.Lens.OrthographicSize;
+            float dy = state.Lens.Orthographic ?
+                state.Lens.OrthographicSize :
+                // vertical size for perspective = distance * Mathf.Tan(Field of View * 0.5F * Pi)
+                Mathf.Abs(transform.position.z) * Mathf.Tan(state.Lens.FieldOfView * Mathf.Deg2Rad * 0.5F);
             float dx = dy * state.Lens.Aspect;
             Vector3 vx = (rot * Vector3.right) * dx;
             Vector3 vy = (rot * Vector3.up) * dy;
