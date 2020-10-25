@@ -100,24 +100,30 @@ namespace ActionCode.Cinemachine.Editor
 
         private void CreateFirstRegion()
         {
-            if (!confiner.HasRegionsData()) return;
-
-            Rect area;
             var camera = Camera.main;
-            if (camera)
+            var canCreateRegion = confiner.HasRegionsData() && camera;
+            if (!canCreateRegion) return;
+
+            Vector2 bottomLeftPos;
+            Vector2 topRightPos;
+
+            if (camera.orthographic)
             {
-                const float SKIN = 0.8f;
-                Vector2 bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
-                Vector2 topRightPos = camera.ViewportToWorldPoint(Vector2.one);
-
-                // Expand
-                bottomLeftPos -= Vector2.one * SKIN;
-                topRightPos += Vector2.one * SKIN;
-
-                var size = topRightPos - bottomLeftPos;
-                area = new Rect(bottomLeftPos, size);
+                bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
+                topRightPos = camera.ViewportToWorldPoint(Vector2.one);
             }
-            else area = new Rect(-20, -10, 40, 20);
+            else
+            {
+                var distance = Mathf.Abs(camera.transform.position.z);
+                bottomLeftPos = camera.ViewportToWorldPoint(new Vector3(0F, 0F, distance));
+                topRightPos = camera.ViewportToWorldPoint(new Vector3(1F, 1F, distance));
+            }
+
+            var area = new Rect()
+            {
+                min = bottomLeftPos,
+                max = topRightPos
+            };
 
             confiner.regionsData.Create(area);
             selectedRegion = confiner.regionsData.First;
