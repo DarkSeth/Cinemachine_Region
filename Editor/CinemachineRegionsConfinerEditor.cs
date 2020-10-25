@@ -20,18 +20,15 @@ namespace ActionCode.Cinemachine.Editor
         private GUIStyle sceneLabelStyle;
         private CinemachineRegionsConfiner confiner;
         private BoxBoundsHandle currentRegionHandle;
-        private RegionOverlaySceneWindow overlayWindow;
+        private bool showSelectedRegionContent = true;
 
         private void OnEnable()
         {
             confiner = (CinemachineRegionsConfiner)target;
-            overlayWindow = new RegionOverlaySceneWindow(this);
-
             currentRegionHandle = new BoxBoundsHandle
             {
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
-
             selectedRegion = confiner.ContainsRegions() ? confiner.regionsData.First : null;
 
             SaveData();
@@ -41,6 +38,7 @@ namespace ActionCode.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            EditorGUILayout.Space();
             DrawExtraInspectorGUI();
         }
 
@@ -57,8 +55,6 @@ namespace ActionCode.Cinemachine.Editor
                     DrawCurrentRegionDeleteButton();
                 }
             }
-
-            overlayWindow.DisplayWindow();
         }
 
         /// <summary>
@@ -72,6 +68,12 @@ namespace ActionCode.Cinemachine.Editor
 
         internal void DrawExtraInspectorGUI()
         {
+            DrawCreationButtons();
+            DrawSelectedRegionContent();
+        }
+
+        private void DrawCreationButtons()
+        {
             if (!confiner.HasRegionsData())
             {
                 DrawCreateRegionsDataButton();
@@ -84,17 +86,25 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawCreateRegionsDataButton()
         {
-            if (GUILayout.Button("Create Regions Data"))
+            const string msg = "Cinemachine Regions Confiner requires a Regions Data asset.";
+            EditorGUILayout.HelpBox(msg, MessageType.Warning);
+
+            if (GUILayout.Button("Create New Regions Data"))
             {
                 CreateRegionsData();
+                UpdateEditorGUI();
             }
         }
 
         private void DrawCreateFirstRegionButton()
         {
+            const string msg = "No Regions were found.";
+            EditorGUILayout.HelpBox(msg, MessageType.Warning);
+
             if (GUILayout.Button("Create First Region"))
             {
                 CreateFirstRegion();
+                UpdateEditorGUI();
             }
         }
 
@@ -147,6 +157,48 @@ namespace ActionCode.Cinemachine.Editor
             }
         }
 
+        private void DrawSelectedRegionContent()
+        {
+            if (!HasSelectedRegion()) return;
+
+            showSelectedRegionContent = EditorGUILayout.Foldout(showSelectedRegionContent, "Selected Region", true, EditorStyles.foldoutHeader);
+
+            if (showSelectedRegionContent)
+            {
+                EditorGUI.indentLevel++;
+
+                DrawSelectedRegionFields();
+                DrawSelectedRegionWorldPositions();
+                EditorGUI.indentLevel--;
+            }
+        }
+
+        private void DrawSelectedRegionFields()
+        {
+            selectedRegion.name = EditorGUILayout.TextField("Name", selectedRegion.name);
+            selectedRegion.area = EditorGUILayout.RectField("Area", selectedRegion.area);
+        }
+
+        private void DrawSelectedRegionWorldPositions()
+        {
+            EditorGUILayout.LabelField("World Positions");
+
+            EditorGUIUtility.labelWidth = 50F;
+
+            EditorGUILayout.BeginHorizontal();
+            selectedRegion.Top = EditorGUILayout.FloatField("Top", selectedRegion.Top);
+            selectedRegion.Bottom = EditorGUILayout.FloatField("Bottom", selectedRegion.Bottom);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            selectedRegion.Left = EditorGUILayout.FloatField("Left", selectedRegion.Left);
+            selectedRegion.Right = EditorGUILayout.FloatField("Right", selectedRegion.Right);
+            EditorGUILayout.EndHorizontal();
+
+            // Resets the value.
+            EditorGUIUtility.labelWidth = 0F;
+        }
+
         private void InitializeGUIStyles()
         {
             sceneLabelStyle = new GUIStyle()
@@ -172,6 +224,7 @@ namespace ActionCode.Cinemachine.Editor
                 {
                     SaveData();
                     selectedRegion = region;
+                    UpdateEditorGUI();
                 }
             }
 
@@ -192,6 +245,7 @@ namespace ActionCode.Cinemachine.Editor
                 // This order is important
                 selectedRegion.area.size = currentRegionHandle.size;
                 selectedRegion.area.center = currentRegionHandle.center;
+                UpdateEditorGUI();
                 //SaveRegionsData();
             }
         }
@@ -202,7 +256,11 @@ namespace ActionCode.Cinemachine.Editor
             var position = selectedRegion.TopRightPos - size;
             var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
 
-            if (deleteButtonDown) DeleteRegion();
+            if (deleteButtonDown)
+            {
+                DeleteRegion();
+                UpdateEditorGUI();
+            }
         }
 
         private void DrawCurrentRegionCreateButtons()
@@ -236,18 +294,22 @@ namespace ActionCode.Cinemachine.Editor
             if (rightButtonDown)
             {
                 CreateRegion(Vector2.right, selectedRegion.area.width);
+                UpdateEditorGUI();
             }
             else if (leftButtonDown)
             {
                 CreateRegion(Vector2.left, selectedRegion.area.width);
+                UpdateEditorGUI();
             }
             else if (topButtonDown)
             {
                 CreateRegion(Vector2.up, selectedRegion.area.height);
+                UpdateEditorGUI();
             }
             else if (bottomButtonDown)
             {
                 CreateRegion(Vector2.down, selectedRegion.area.height);
+                UpdateEditorGUI();
             }
         }
 
@@ -274,6 +336,11 @@ namespace ActionCode.Cinemachine.Editor
             {
                 Undo.RecordObject(confiner.regionsData, "Modify Regions data");
             }
+        }
+
+        private void UpdateEditorGUI()
+        {
+            EditorUtility.SetDirty(target);
         }
     }
 }

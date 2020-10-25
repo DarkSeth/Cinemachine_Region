@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - CinemachineFollowAttacher component
+
 ### Changed
 - Improve First Region creation. Check if main camera is perspective or orthographic
-- Improve Create Regions GUI. Inspector and Overlay Scene show the same extra GUI helpers
+- Improve Create Regions GUI
 - Fix Create New Regions path button. It opens on the local project Scene folder
+
+### Removed
+- RegionOverlaySceneWindow class
 
 ## [1.0.0-preview.0] - 2020-10-24
 ### Add
