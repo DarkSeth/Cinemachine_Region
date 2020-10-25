@@ -46,6 +46,8 @@ namespace ActionCode.Cinemachine.Editor
         {
             if (confiner.ContainsRegions())
             {
+                var lastHandlesColor = Handles.color;
+
                 DrawRegions();
                 var hasCurrentRegion = selectedRegion != null;
                 if (hasCurrentRegion)
@@ -54,6 +56,8 @@ namespace ActionCode.Cinemachine.Editor
                     DrawCurrentRegionCreateButtons();
                     DrawCurrentRegionDeleteButton();
                 }
+
+                Handles.color = lastHandlesColor;
             }
         }
 
@@ -212,7 +216,6 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DrawRegions()
         {
-            var lastHandlesColor = Handles.color;
             Handles.color = REGIONS_COLOR;
 
             foreach (var region in confiner.regionsData.regions)
@@ -227,8 +230,6 @@ namespace ActionCode.Cinemachine.Editor
                     UpdateEditorGUI();
                 }
             }
-
-            Handles.color = lastHandlesColor;
         }
 
         private void HandleCurrentRegion()
@@ -254,6 +255,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             var size = Vector2.one * 2F;
             var position = selectedRegion.TopRightPos - size;
+            Handles.color = Color.red;
             var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
 
             if (deleteButtonDown)
@@ -277,6 +279,8 @@ namespace ActionCode.Cinemachine.Editor
             var isLeftButtonAvailable = !confiner.regionsData.Contains(leftPos);
             var isTopButtonAvailable = !confiner.regionsData.Contains(topPos);
             var isBottomButtonAvailable = !confiner.regionsData.Contains(bottomPos);
+
+            Handles.color = Color.blue;
 
             var rightButtonDown =
                 isRightButtonAvailable &&
