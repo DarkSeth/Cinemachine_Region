@@ -70,7 +70,7 @@ namespace ActionCode.Cinemachine.Editor
             return confiner.ContainsRegions() && selectedRegion != null;
         }
 
-        internal void DrawExtraInspectorGUI()
+        private void DrawExtraInspectorGUI()
         {
             DrawCreationButtons();
             DrawSelectedRegionContent();
@@ -96,7 +96,6 @@ namespace ActionCode.Cinemachine.Editor
             if (GUILayout.Button("Create New Regions Data"))
             {
                 CreateRegionsData();
-                UpdateEditorGUI();
             }
         }
 
@@ -108,7 +107,6 @@ namespace ActionCode.Cinemachine.Editor
             if (GUILayout.Button("Create First Region"))
             {
                 CreateFirstRegion();
-                UpdateEditorGUI();
             }
         }
 
@@ -171,8 +169,13 @@ namespace ActionCode.Cinemachine.Editor
             {
                 EditorGUI.indentLevel++;
 
+                EditorGUI.BeginChangeCheck();
                 DrawSelectedRegionFields();
                 DrawSelectedRegionWorldPositions();
+                var hasChanges = EditorGUI.EndChangeCheck();
+
+                if (hasChanges) SaveData();
+
                 EditorGUI.indentLevel--;
             }
         }
@@ -227,7 +230,6 @@ namespace ActionCode.Cinemachine.Editor
                 {
                     SaveData();
                     selectedRegion = region;
-                    UpdateEditorGUI();
                 }
             }
         }
@@ -246,8 +248,8 @@ namespace ActionCode.Cinemachine.Editor
                 // This order is important
                 selectedRegion.area.size = currentRegionHandle.size;
                 selectedRegion.area.center = currentRegionHandle.center;
-                UpdateEditorGUI();
-                //SaveRegionsData();
+                // save when stop moving
+                //SaveData();
             }
         }
 
@@ -261,7 +263,6 @@ namespace ActionCode.Cinemachine.Editor
             if (deleteButtonDown)
             {
                 DeleteRegion();
-                UpdateEditorGUI();
             }
         }
 
@@ -298,22 +299,18 @@ namespace ActionCode.Cinemachine.Editor
             if (rightButtonDown)
             {
                 CreateRegion(Vector2.right, selectedRegion.area.width);
-                UpdateEditorGUI();
             }
             else if (leftButtonDown)
             {
                 CreateRegion(Vector2.left, selectedRegion.area.width);
-                UpdateEditorGUI();
             }
             else if (topButtonDown)
             {
                 CreateRegion(Vector2.up, selectedRegion.area.height);
-                UpdateEditorGUI();
             }
             else if (bottomButtonDown)
             {
                 CreateRegion(Vector2.down, selectedRegion.area.height);
-                UpdateEditorGUI();
             }
         }
 
@@ -340,6 +337,7 @@ namespace ActionCode.Cinemachine.Editor
             {
                 Undo.RecordObject(confiner.regionsData, "Modify Regions data");
             }
+            UpdateEditorGUI();
         }
 
         private void UpdateEditorGUI()
