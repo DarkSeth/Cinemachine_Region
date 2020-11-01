@@ -31,7 +31,7 @@ namespace ActionCode.Cinemachine
         /// <summary>
         /// Whether a transition is in place.
         /// </summary>
-        public bool IsTransition { get; private set; }
+        public bool IsTransition => transition.IsTransition;
 
         /// <summary>
         /// Transition speed between regions.
@@ -43,12 +43,12 @@ namespace ActionCode.Cinemachine
         }
 
         /// <summary>
-        /// Unity event fired when a transition between scenes has completed.
+        /// Unity event fired when a transition between regions has completed.
         /// <para>The first argument is the last Region and the second is the current one.</para>
         /// </summary>
         public UnityAction<Region, Region> OnRegionChanged;
 
-        private float transitionStep;
+        private RegionTransition transition;
 
         private const float MIN_TRANSITION_SPEED = 0.1F;
 
@@ -83,44 +83,33 @@ namespace ActionCode.Cinemachine
 
             if (CurrentRegion == null) return;
 
+            var displacement = ConfineScreenEdges(ref state);
             var isDifferentRegion = LastRegion != null &&
                 CurrentRegion != LastRegion;
             var isValidState = deltaTime >= 0 &&
                 VirtualCamera.PreviousStateIsValid;
-            var beginRegionTransition = isDifferentRegion &&
+            var startRegionTransition = isDifferentRegion &&
                 isValidState &&
                 Application.isPlaying;
-            var displacement = ConfineScreenEdges(ref state);
 
-            if (beginRegionTransition) BeginRegionTransition();
-
-            if (IsTransition)
+            if (startRegionTransition)
             {
-                displacement = Vector3.Lerp(Vector3.zero, displacement, transitionStep);
-                transitionStep += transitionSpeed * deltaTime;
+                var nextPosition = state.CorrectedPosition + displacement;
+                transition.Start(nextPosition);
+            }
+            else if (IsTransition)
+            {
+                transition.Update(ref displacement, transitionSpeed, deltaTime);
+                transition.Draw();
 
-                IsTransition = transitionStep < 1F;
-                if (!IsTransition) StopRegionTransition();
+                var hasTransitionEnded = !transition.IsTransition;
+                if (hasTransitionEnded)
+                {
+                    FireRegionChangedEvent();
+                }
             }
 
             state.PositionCorrection += displacement;
-        }
-
-        private void BeginRegionTransition()
-        {
-            IsTransition = true;
-            transitionStep = 0F;
-        }
-
-        private void StopRegionTransition()
-        {
-            IsTransition = false;
-            transitionStep = 0F;
-
-            if (OnRegionChanged != null)
-            {
-                OnRegionChanged.Invoke(LastRegion, CurrentRegion);
-            }
         }
 
         private void UpdateCurrentRegion(Transform target)
@@ -206,6 +195,14 @@ namespace ActionCode.Cinemachine
             var closest = CurrentRegion.ClosestPoint(camPos);
             closest.z = camPos.z;
             return closest - camPos;
+        }
+
+        private void FireRegionChangedEvent()
+        {
+            if (OnRegionChanged != null)
+            {
+                OnRegionChanged.Invoke(LastRegion, CurrentRegion);
+            }
         }
     }
 }
