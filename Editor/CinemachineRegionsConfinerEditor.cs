@@ -31,7 +31,7 @@ namespace ActionCode.Cinemachine.Editor
             };
             selectedRegion = confiner.ContainsRegions() ? confiner.regionsData.First : null;
 
-            SaveData();
+            RecordData();
             InitializeGUIStyles();
         }
 
@@ -39,7 +39,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             base.OnInspectorGUI();
             EditorGUILayout.Space();
-            DrawExtraInspectorGUI();
+            DrawSelectedRegionContent();
         }
 
         private void OnSceneGUI()
@@ -70,95 +70,6 @@ namespace ActionCode.Cinemachine.Editor
             return confiner.ContainsRegions() && selectedRegion != null;
         }
 
-        private void DrawExtraInspectorGUI()
-        {
-            DrawCreationButtons();
-            DrawSelectedRegionContent();
-        }
-
-        private void DrawCreationButtons()
-        {
-            if (!confiner.HasRegionsData())
-            {
-                DrawCreateRegionsDataButton();
-            }
-            else if (!confiner.ContainsRegions())
-            {
-                DrawCreateFirstRegionButton();
-            }
-        }
-
-        private void DrawCreateRegionsDataButton()
-        {
-            const string msg = "Cinemachine Regions Confiner requires a Regions Data asset.";
-            EditorGUILayout.HelpBox(msg, MessageType.Warning);
-
-            if (GUILayout.Button("Create New Regions Data"))
-            {
-                CreateRegionsData();
-            }
-        }
-
-        private void DrawCreateFirstRegionButton()
-        {
-            const string msg = "No Regions were found.";
-            EditorGUILayout.HelpBox(msg, MessageType.Warning);
-
-            if (GUILayout.Button("Create First Region"))
-            {
-                CreateFirstRegion();
-            }
-        }
-
-        private void CreateFirstRegion()
-        {
-            var camera = Camera.main;
-            var canCreateRegion = confiner.HasRegionsData() && camera;
-            if (!canCreateRegion) return;
-
-            Vector2 bottomLeftPos;
-            Vector2 topRightPos;
-
-            if (camera.orthographic)
-            {
-                bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
-                topRightPos = camera.ViewportToWorldPoint(Vector2.one);
-            }
-            else
-            {
-                var distance = Mathf.Abs(camera.transform.position.z);
-                bottomLeftPos = camera.ViewportToWorldPoint(new Vector3(0F, 0F, distance));
-                topRightPos = camera.ViewportToWorldPoint(new Vector3(1F, 1F, distance));
-            }
-
-            var area = new Rect()
-            {
-                min = bottomLeftPos,
-                max = topRightPos
-            };
-
-            confiner.regionsData.Create(area);
-            selectedRegion = confiner.regionsData.First;
-        }
-
-        private void CreateRegionsData()
-        {
-            var data = CreateInstance<RegionsData>();
-            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            var scenePath = scene != null ? System.IO.Path.GetDirectoryName(scene.path) : "Assets/Scenes";
-            var name = $"{scene.name}-Regions";
-            var path = EditorUtility.SaveFilePanelInProject("New Regions Data", name, "asset", string.Empty, scenePath);
-            var isValid = path.Length > 0;
-            if (isValid)
-            {
-                AssetDatabase.CreateAsset(data, path);
-                AssetDatabase.Refresh();
-
-                confiner.regionsData = AssetDatabase.LoadAssetAtPath<RegionsData>(path);
-                CreateFirstRegion();
-            }
-        }
-
         private void DrawSelectedRegionContent()
         {
             if (!HasSelectedRegion()) return;
@@ -174,7 +85,7 @@ namespace ActionCode.Cinemachine.Editor
                 DrawSelectedRegionWorldPositions();
                 var hasChanges = EditorGUI.EndChangeCheck();
 
-                if (hasChanges) SaveData();
+                if (hasChanges) RecordData();
 
                 EditorGUI.indentLevel--;
             }
@@ -228,7 +139,7 @@ namespace ActionCode.Cinemachine.Editor
                 var selectRegion = HandlesButton.RectButton(region.area);
                 if (selectRegion)
                 {
-                    SaveData();
+                    RecordData();
                     selectedRegion = region;
                 }
             }
@@ -316,7 +227,7 @@ namespace ActionCode.Cinemachine.Editor
 
         private void CreateRegion(Vector2 direction, float distance)
         {
-            SaveData();
+            RecordData();
             var area = new Rect(selectedRegion.area);
             area.position += direction * distance;
             confiner.regionsData.Create(area);
@@ -325,18 +236,18 @@ namespace ActionCode.Cinemachine.Editor
 
         private void DeleteRegion()
         {
-            SaveData();
+            RecordData();
             confiner.regionsData.Delete(selectedRegion);
             selectedRegion = null;
         }
 
-        private void SaveData()
+        private void RecordData()
         {
-            Undo.RecordObject(this, "Modify Cinemachine Regions Confiner Editor data");
+            /*Undo.RecordObject(this, "Modify Cinemachine Regions Confiner Editor data");
             if (confiner.HasRegionsData())
             {
                 Undo.RecordObject(confiner.regionsData, "Modify Regions data");
-            }
+            }*/
             UpdateEditorGUI();
         }
 
