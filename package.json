@@ -1,7 +1,7 @@
 {
   "name": "com.actioncode.cinemachine-regions",
   "displayName": "ActionCode-Cinemachine Regions",
-  "version": "1.0.0-preview.0",
+  "version": "1.0.0-preview.1",
   "unity": "2018.4",
   "description": "New Confiner used by Cinemachine extension",
   "keywords": [

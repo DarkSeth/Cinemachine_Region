@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.0-preview.1] - 2020-11-01
 ### Added
 - Regions Data Property Drawer
 - CinemachineFollowAttacher component
@@ -31,5 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README
 - .gitignore
 
-[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.0.0-preview.0
+[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.0.0-preview.1
+[1.0.0-preview.1]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.1/
 [1.0.0-preview.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.0/
