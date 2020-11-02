@@ -45,7 +45,7 @@ namespace ActionCode.Cinemachine
 
         /// <summary>
         /// Unity event fired when a transition between regions has completed.
-        /// <para>The first argument is the last Region and the second is the current one.</para>
+        /// <para>The first argument is the previous Region and the second is the current one.</para>
         /// </summary>
         public UnityAction<Region, Region> OnRegionChanged;
 

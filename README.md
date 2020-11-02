@@ -9,7 +9,39 @@
 
 ## How to Use
 
+### Attach a ```CinemachineRegionsConfiner``` component
+
 If you didn't already, add a ```CinemachineVirtualCamera``` script to a GameObject. In the **Extension** section, add ```CinemachineRegionsConfiner``` extension.
+
+### Bind events to ```OnRegionChanged``` action
+
+You can fire an Unity event when a transition between regions is completely done.<br/>
+The first argument is the previous Region and the second is the current one.
+
+```csharp
+using ActionCode.Cinemachine;
+
+public sealed class Test_RegionTransitionEvent : MonoBehaviour
+{
+    public CinemachineRegionsConfiner confiner;
+
+    private void OnEnable()
+    {
+        confiner.OnRegionChanged += OnTransition;
+    }
+
+    private void OnDisable()
+    {
+        confiner.OnRegionChanged -= OnTransition;
+    }
+
+
+    private void OnTransition(Region previous, Region current)
+    {
+        print($"Previous region was: {previous.name} and Current is: {current.name}");
+    }
+}
+```
 
 ## Installation
 
