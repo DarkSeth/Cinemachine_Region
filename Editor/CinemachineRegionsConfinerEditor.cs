@@ -15,7 +15,9 @@ namespace ActionCode.Cinemachine.Editor
         /// </summary>
         public Region selectedRegion;
 
-        private readonly Color REGIONS_COLOR = new Color(0f, 1f, 0f, 0.4f);
+        private readonly Color REGIONS_AREA_COLOR = Color.green * 0.6F;
+        private readonly Color REGIONS_DELETE_BUTTON_COLOR = Color.red * 0.9F;
+        private readonly Color REGIONS_CREATE_BUTTON_COLOR = Color.blue * 0.8F;
 
         private GUIStyle sceneLabelStyle;
         private CinemachineRegionsConfiner confiner;
@@ -125,12 +127,12 @@ namespace ActionCode.Cinemachine.Editor
                 alignment = TextAnchor.LowerLeft,
                 fontSize = 16
             };
-            sceneLabelStyle.normal.textColor = REGIONS_COLOR;
+            sceneLabelStyle.normal.textColor = REGIONS_AREA_COLOR;
         }
 
         private void DrawRegions()
         {
-            Handles.color = REGIONS_COLOR;
+            Handles.color = REGIONS_AREA_COLOR;
 
             foreach (var region in confiner.regionsData.regions)
             {
@@ -168,7 +170,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             var size = Vector2.one * 2F;
             var position = selectedRegion.TopRightPos - size;
-            Handles.color = Color.red;
+            Handles.color = REGIONS_DELETE_BUTTON_COLOR;
             var deleteButtonDown = HandlesButton.CrossButton(position, size, 0F);
 
             if (deleteButtonDown)
@@ -192,7 +194,7 @@ namespace ActionCode.Cinemachine.Editor
             var isTopButtonAvailable = !confiner.regionsData.Contains(topPos);
             var isBottomButtonAvailable = !confiner.regionsData.Contains(bottomPos);
 
-            Handles.color = Color.blue;
+            Handles.color = REGIONS_CREATE_BUTTON_COLOR;
 
             var rightButtonDown =
                 isRightButtonAvailable &&
