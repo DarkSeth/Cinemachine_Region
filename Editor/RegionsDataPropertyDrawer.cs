@@ -78,35 +78,17 @@ namespace ActionCode.Cinemachine.Editor
 
         private void CreateSceneRegion()
         {
-            var camera = Camera.main;
-            if (camera == null) return;
-
-            Vector2 bottomLeftPos;
-            Vector2 topRightPos;
-            regionsData = property.objectReferenceValue as RegionsData;
-
-            if (camera.orthographic)
+            var area = CinemachineRegionsConfiner.GetMainCameraFrameArea();
+            var isAreaTooSmall = area.size.sqrMagnitude < 125F;
+            if (isAreaTooSmall)
             {
-                bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
-                topRightPos = camera.ViewportToWorldPoint(Vector2.one);
-            }
-            else
-            {
-                var distance = Mathf.Abs(camera.transform.position.z);
-                bottomLeftPos = camera.ViewportToWorldPoint(new Vector3(0F, 0F, distance));
-                topRightPos = camera.ViewportToWorldPoint(new Vector3(1F, 1F, distance));
+                area = new Rect(area.position, new Vector2(10F, 5F));
             }
 
             // Expanding area
             const float EXPAND_FACTOR = 2.5F;
-            bottomLeftPos -= Vector2.one * EXPAND_FACTOR;
-            topRightPos += Vector2.one * EXPAND_FACTOR;
-
-            var area = new Rect()
-            {
-                min = bottomLeftPos,
-                max = topRightPos
-            };
+            area.min -= Vector2.one * EXPAND_FACTOR;
+            area.max += Vector2.one * EXPAND_FACTOR;
 
             regionsData.Create(area);
         }

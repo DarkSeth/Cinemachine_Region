@@ -71,6 +71,37 @@ namespace ActionCode.Cinemachine
             return HasRegionsData() && !regionsData.IsEmpty();
         }
 
+        /// <summary>
+        /// Returns the main camera frame area as a rectangle.
+        /// </summary>
+        /// <returns></returns>
+        public static Rect GetMainCameraFrameArea()
+        {
+            var camera = Camera.main;
+            if (camera == null) return default;
+
+            Vector2 bottomLeftPos;
+            Vector2 topRightPos;
+
+            if (camera.orthographic)
+            {
+                bottomLeftPos = camera.ViewportToWorldPoint(Vector2.zero);
+                topRightPos = camera.ViewportToWorldPoint(Vector2.one);
+            }
+            else
+            {
+                var distance = Mathf.Abs(camera.transform.position.z);
+                bottomLeftPos = camera.ViewportToWorldPoint(new Vector3(0F, 0F, distance));
+                topRightPos = camera.ViewportToWorldPoint(new Vector3(1F, 1F, distance));
+            }
+
+            return new Rect()
+            {
+                min = bottomLeftPos,
+                max = topRightPos
+            };
+        }
+
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage,
@@ -204,6 +235,28 @@ namespace ActionCode.Cinemachine
             {
                 OnRegionChanged.Invoke(LastRegion, CurrentRegion);
             }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            DrawCameraFrameArea();
+        }
+
+        private void DrawCameraFrameArea()
+        {
+            var frame = GetMainCameraFrameArea();
+            var bottomRight = frame.min + Vector2.right * frame.width;
+            var topLeft = frame.min + Vector2.up * frame.height;
+            var gizmosColor = Gizmos.color;
+
+            Gizmos.color = Color.white;
+
+            Gizmos.DrawLine(frame.min, bottomRight);
+            Gizmos.DrawLine(bottomRight, frame.max);
+            Gizmos.DrawLine(frame.max, topLeft);
+            Gizmos.DrawLine(topLeft, frame.min);
+
+            Gizmos.color = gizmosColor;
         }
     }
 }
