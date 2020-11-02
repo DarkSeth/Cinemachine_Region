@@ -22,7 +22,6 @@ namespace ActionCode.Cinemachine.Editor
         private GUIStyle sceneLabelStyle;
         private CinemachineRegionsConfiner confiner;
         private BoxBoundsHandle currentRegionHandle;
-        private bool showSelectedRegionContent = true;
 
         private void OnEnable()
         {
@@ -76,34 +75,31 @@ namespace ActionCode.Cinemachine.Editor
         {
             if (!HasSelectedRegion()) return;
 
-            showSelectedRegionContent = EditorGUILayout.Foldout(showSelectedRegionContent, "Selected Region", true, EditorStyles.foldoutHeader);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            EditorGUILayout.PrefixLabel("Selected Region", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
 
-            if (showSelectedRegionContent)
-            {
-                EditorGUI.indentLevel++;
+            EditorGUI.BeginChangeCheck();
+            DrawSelectedRegionFields();
+            DrawSelectedRegionWorldPositions();
+            var hasChanges = EditorGUI.EndChangeCheck();
+            if (hasChanges) RecordData();
 
-                EditorGUI.BeginChangeCheck();
-                DrawSelectedRegionFields();
-                DrawSelectedRegionWorldPositions();
-                var hasChanges = EditorGUI.EndChangeCheck();
-
-                if (hasChanges) RecordData();
-
-                EditorGUI.indentLevel--;
-            }
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawSelectedRegionFields()
         {
             selectedRegion.name = EditorGUILayout.TextField("Name", selectedRegion.name);
-            selectedRegion.area = EditorGUILayout.RectField("Area", selectedRegion.area);
+            //selectedRegion.area = EditorGUILayout.RectField("Area", selectedRegion.area);
         }
 
         private void DrawSelectedRegionWorldPositions()
         {
             EditorGUILayout.LabelField("World Positions");
 
-            EditorGUIUtility.labelWidth = 50F;
+            EditorGUIUtility.labelWidth = 80F;
 
             EditorGUILayout.BeginHorizontal();
             selectedRegion.Top = EditorGUILayout.FloatField("Top", selectedRegion.Top);
