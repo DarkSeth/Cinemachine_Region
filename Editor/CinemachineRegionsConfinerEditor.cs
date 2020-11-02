@@ -17,7 +17,7 @@ namespace ActionCode.Cinemachine.Editor
 
         private readonly Color REGIONS_AREA_COLOR = Color.green * 0.6F;
         private readonly Color REGIONS_DELETE_BUTTON_COLOR = Color.red * 0.9F;
-        private readonly Color REGIONS_CREATE_BUTTON_COLOR = Color.blue * 0.8F;
+        private readonly Color REGIONS_CREATE_BUTTON_COLOR = Color.green * 1.8F;
 
         private GUIStyle sceneLabelStyle;
         private CinemachineRegionsConfiner confiner;
@@ -26,14 +26,18 @@ namespace ActionCode.Cinemachine.Editor
         private void OnEnable()
         {
             confiner = (CinemachineRegionsConfiner)target;
-            currentRegionHandle = new BoxBoundsHandle
+            currentRegionHandle = new BoxBoundsHandle()
             {
                 axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y
             };
             selectedRegion = confiner.ContainsRegions() ? confiner.regionsData.First : null;
 
-            RecordData();
             InitializeGUIStyles();
+        }
+
+        private void OnDisable()
+        {
+            SaveRegionsData();
         }
 
         public override void OnInspectorGUI()
@@ -83,7 +87,11 @@ namespace ActionCode.Cinemachine.Editor
             DrawSelectedRegionFields();
             DrawSelectedRegionWorldPositions();
             var hasChanges = EditorGUI.EndChangeCheck();
-            if (hasChanges) RecordData();
+            if (hasChanges)
+            {
+                SaveRegionsData();
+                UpdateEditorGUI();
+            }
 
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
@@ -137,8 +145,8 @@ namespace ActionCode.Cinemachine.Editor
                 var selectRegion = HandlesButton.RectButton(region.area);
                 if (selectRegion)
                 {
-                    RecordData();
                     selectedRegion = region;
+                    UpdateEditorGUI();
                 }
             }
         }
@@ -157,8 +165,8 @@ namespace ActionCode.Cinemachine.Editor
                 // This order is important
                 selectedRegion.area.size = currentRegionHandle.size;
                 selectedRegion.area.center = currentRegionHandle.center;
-                // save when stop moving
-                //SaveData();
+
+                UpdateEditorGUI();
             }
         }
 
@@ -225,28 +233,29 @@ namespace ActionCode.Cinemachine.Editor
 
         private void CreateRegion(Vector2 direction, float distance)
         {
-            RecordData();
             var area = new Rect(selectedRegion.area);
             area.position += direction * distance;
             confiner.regionsData.Create(area);
             selectedRegion = confiner.regionsData.Last;
+
+            SaveRegionsData();
+            UpdateEditorGUI();
         }
 
         private void DeleteRegion()
         {
-            RecordData();
             confiner.regionsData.Delete(selectedRegion);
             selectedRegion = null;
+
+            SaveRegionsData();
+            UpdateEditorGUI();
         }
 
-        private void RecordData()
+        private void SaveRegionsData()
         {
-            /*Undo.RecordObject(this, "Modify Cinemachine Regions Confiner Editor data");
-            if (confiner.HasRegionsData())
-            {
-                Undo.RecordObject(confiner.regionsData, "Modify Regions data");
-            }*/
-            UpdateEditorGUI();
+            if (!confiner.HasRegionsData()) return;
+            var serializedRegionsData = new SerializedObject(confiner.regionsData);
+            serializedRegionsData.ApplyModifiedProperties();
         }
 
         private void UpdateEditorGUI()
