@@ -50,6 +50,7 @@ namespace ActionCode.Cinemachine
         public UnityAction<Region, Region> OnRegionChanged;
 
         private RegionTransition transition;
+        private Region previousRegion;
 
         private const float MIN_TRANSITION_SPEED = 0.1F;
 
@@ -110,19 +111,24 @@ namespace ActionCode.Cinemachine
             var isValidStage = stage == CinemachineCore.Stage.Finalize || stage == CinemachineCore.Stage.Body;
             if (!HasRegionsData() || !isValidStage) return;
 
-            LastRegion = CurrentRegion;
+            previousRegion = CurrentRegion;
             UpdateCurrentRegion(vcam.Follow);
 
             if (CurrentRegion == null) return;
 
             var displacement = ConfineScreenEdges(ref state);
-            var isDifferentRegion = LastRegion != null &&
-                CurrentRegion != LastRegion;
+            var isDifferentRegion = previousRegion != null &&
+                CurrentRegion != previousRegion;
             var isValidState = deltaTime >= 0 &&
                 VirtualCamera.PreviousStateIsValid;
             var startRegionTransition = isDifferentRegion &&
                 isValidState &&
                 Application.isPlaying;
+
+            if (isDifferentRegion)
+            {
+                LastRegion = previousRegion;
+            }
 
             if (startRegionTransition)
             {
