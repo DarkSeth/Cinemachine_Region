@@ -9,13 +9,19 @@
 
 ## How to Use
 
-### Attach a ```CinemachineRegionsConfiner``` component
+### Cinemachine Regions Confiner component
 
-If you didn't already, add a ```CinemachineVirtualCamera``` script to a GameObject. In the **Extension** section, add ```CinemachineRegionsConfiner``` extension.
+Add a Cinemachine 2D Camera on your scene. Setup the ```Follow``` and ```Body``` part from your ```CinemachineVirtualCamera``` component.
 
-### Bind events to ```OnRegionChanged``` action
+Next, in the **Extension** section, add ```CinemachineRegionsConfiner``` extension and create a ```Region Data``` asset.
 
-You can fire an Unity event when a transition between regions is completely done.<br/>
+![alt text][cinemachine-regions-confiner]
+
+
+### Optional: Bind events to OnRegionChanged action
+
+You can fire an Unity event when a transition between regions is completely done.
+
 The first argument is the previous Region and the second is the current one.
 
 ```csharp
@@ -78,3 +84,5 @@ Use the **Package Manager** "Add package from git URL..." feature or add manuall
 [BitBucket](https://bitbucket.org/HyagoGow/) -
 [Unity Connect](https://connect.unity.com/u/hyago-oliveira) -
 <hyagogow@gmail.com>
+
+[cinemachine-regions-confiner]: /Documentation~/add-cinemachine-regions-confiner.gif "Cinemachine Regions Confiner"
