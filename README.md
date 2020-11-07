@@ -13,10 +13,21 @@
 
 Add a Cinemachine 2D Camera on your scene. Setup the ```Follow``` and ```Body``` part from your ```CinemachineVirtualCamera``` component.
 
-Next, in the **Extension** section, add ```CinemachineRegionsConfiner``` extension and create a ```Region Data``` asset.
+Next, in the **Extension** section, add a ```CinemachineRegionsConfiner``` extension and create a ```Region Data``` asset.
 
 ![alt text][cinemachine-regions-confiner]
 
+You can select and edit any region in the Scene window, just like editing a BoxCollider2D.
+
+![alt text][edit-region]
+
+For precision, you can edit the selected region on the Inspector window.
+
+![alt text][edit-world-position-region]
+
+Finally, you can create new regions and remove any of them.
+
+![alt text][add-remove-region]
 
 ### Optional: Bind events to OnRegionChanged action
 
@@ -86,3 +97,6 @@ Use the **Package Manager** "Add package from git URL..." feature or add manuall
 <hyagogow@gmail.com>
 
 [cinemachine-regions-confiner]: /Documentation~/add-cinemachine-regions-confiner.gif "Cinemachine Regions Confiner"
+[edit-region]: /Documentation~/edit-region.gif "Edit Regions"
+[add-remove-region]: /Documentation~/add-remove-region.gif "Add Regions"
+[edit-world-position-region]: /Documentation~/edit-world-position-region.gif "Edit World Positions"
