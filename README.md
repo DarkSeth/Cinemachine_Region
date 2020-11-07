@@ -31,7 +31,9 @@ Finally, you can create new regions and remove any of them using the Scene butto
 
 ### Optional: Bind events to OnRegionChanged action
 
-You can fire an Unity event when a transition between regions is completely done.
+If your game needs to run some logic between transitions you can easily do it using a custom ```UnityEvent``` provided by ```CinemachineRegionsConfiner```.
+
+You can fire any Unity event when a transition between regions is completely done by adding your custom function to ```CinemachineRegionsConfiner.OnRegionChanged``` action.
 
 The first argument is the previous Region and the second is the current one.
 
