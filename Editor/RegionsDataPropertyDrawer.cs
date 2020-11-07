@@ -17,7 +17,7 @@ namespace ActionCode.Cinemachine.Editor
         {
             this.property = property;
 
-            regionsData = property.objectReferenceValue as RegionsData;
+            LoadRegionsData();
             hasRegionData = regionsData != null;
 
             DrawRegionPropertyField(ref rect, label);
@@ -90,6 +90,11 @@ namespace ActionCode.Cinemachine.Editor
             area.min -= Vector2.one * EXPAND_FACTOR;
             area.max += Vector2.one * EXPAND_FACTOR;
 
+            if (regionsData == null)
+            {
+                LoadRegionsData();
+            }
+
             regionsData.Create(area);
         }
 
@@ -103,6 +108,11 @@ namespace ActionCode.Cinemachine.Editor
         {
             const string msg = "No Scene Regions were found. Create one using the Cog button above.";
             EditorGUILayout.HelpBox(msg, MessageType.Warning);
+        }
+
+        private void LoadRegionsData()
+        {
+            regionsData = property.objectReferenceValue as RegionsData;
         }
     }
 }
