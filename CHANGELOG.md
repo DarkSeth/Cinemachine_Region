@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2020-11-07
+### Added
+- Documentation
+
+### Changed
+- Fix Main Camera size inside regions
+- Fix Null reference exception on RegionDataPropertyDrawer
+- Remove editor Undo capability
+- Improve Selected Region Inspector
+- Draw Main Camera Frame Area
+- Region button colors
+
 ## [1.0.0-preview.1] - 2020-11-01
 ### Added
 - Regions Data Property Drawer
@@ -33,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README
 - .gitignore
 
-[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.0.0-preview.1
+[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.0.0
+[1.0.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0/
 [1.0.0-preview.1]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.1/
 [1.0.0-preview.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.0/
