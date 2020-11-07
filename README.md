@@ -6,12 +6,23 @@
 * Dependencies:
     - [Cinemachine](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.2/changelog/CHANGELOG.html) : **2.2.0**
 
+## Summary
+
+For a 2D game using Cinemachine, you can create camera transitions between areas by creating multiple Virtual Cameras and active them using a script when your player enters or leaves those areas. 
+
+This setup can be a little time consuming sometimes. A better approach would be to have a Cinemachine component created just to deal with 2D Camera transitions between regions on you Scene.
+
+This package contains a Cinemachine extension called Cinemachine Regions Confiner used to do it.
 
 ## How to Use
 
 ### Cinemachine Regions Confiner
 
-Add a Cinemachine 2D Camera on your scene. Setup the ```Follow``` and ```Body``` part from your ```CinemachineVirtualCamera``` component.
+You need to add a Cinemachine Regions Confiner extension to a Virtual Camera and editing regions on the Scene window. Each region has a name and an area that you can edit as you like.
+
+To do it, follow the steps bellow: 
+
+If you don't have already, add a Cinemachine 2D Camera on your scene and proper set the ```Follow``` and ```Body``` part from your ```CinemachineVirtualCamera``` component.
 
 Next, in the **Extension** section, add a ```CinemachineRegionsConfiner``` extension and create a ```Region Data``` asset. Select a folder and save it.
 
@@ -84,10 +95,10 @@ The package **ActionCode-Cinemachine Regions** will be available for you to inst
 
 You will need a **Git client** installed on your computer with the Path variable already set. 
 
-Use the **Package Manager** "Add package from git URL..." feature or add manually this line inside `dependencies` attribute: 
+Use the **Package Manager** "Add package from git URL..." option or add manually this line inside `dependencies` attribute: 
 
 ```json
-"com.actioncode.cinemachine-regions":"https://bitbucket.org/nostgameteam/cinemachine-regions.git"
+"com.actioncode.cinemachine-regions": "https://bitbucket.org/nostgameteam/cinemachine-regions.git"
 ```
 
 ---
