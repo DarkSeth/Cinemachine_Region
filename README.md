@@ -8,17 +8,17 @@
 
 ## Summary
 
-For a 2D game using Cinemachine, you can create camera transitions between areas by creating multiple Virtual Cameras and active them using a script when your player enters or leaves those areas. 
+For a 2D game using Cinemachine, you can create camera transitions between areas by creating multiple Virtual Cameras and active them using a custom script to detected when your player enters or leaves those areas. 
 
-This setup can be a little time consuming sometimes. A better approach would be to have a Cinemachine component created just to deal with 2D Camera transitions between regions on you Scene.
+This setup can be a little time consuming sometimes as you need to create multiples Virtual Cameras. A better approach would be to have a Cinemachine component created just to deal with 2D Camera transitions between regions on you Scene.
 
-This package contains a Cinemachine extension called Cinemachine Regions Confiner used to do it.
+This package contains a Cinemachine extension called **Cinemachine Regions Confiner** used to just do it.
 
 ## How to Use
 
-### Cinemachine Regions Confiner
+### Create Regions
 
-You need to add a Cinemachine Regions Confiner extension to a Virtual Camera and editing regions on the Scene window. Each region has a name and an area that you can edit as you like.
+You need to add a Cinemachine Regions Confiner extension to a Virtual Camera and editing regions on the Scene window. Each region has a Name and an Area that you can edit as you like.
 
 To do it, follow the steps bellow: 
 
@@ -28,17 +28,23 @@ Next, in the **Extension** section, add a ```CinemachineRegionsConfiner``` exten
 
 ![alt text][cinemachine-regions-confiner]
 
+This new asset is a ```ScriptableObject``` that will hold your regions information data. 
+
 You can select and edit any region in the Scene window, just like editing a ```BoxCollider2D```.
 
 ![alt text][edit-region]
 
-For a greater accuracy, you can edit more precisely the selected region using the Inspector window.
+Also use the Inspector window to rename you selected region or to edit its area more precisely.
 
 ![alt text][edit-world-position-region]
 
 Finally, you can create new regions and remove any of them using the Scene buttons.
 
 ![alt text][add-remove-region]
+
+A linear camera transition will happen every time your Follow transform enters inside a new region.
+
+![alt text][showcase]
 
 ### Optional: Bind events to OnRegionChanged action
 
@@ -113,3 +119,4 @@ Use the **Package Manager** "Add package from git URL..." option or add manually
 [edit-region]: /Documentation~/edit-region.gif "Editing regions"
 [add-remove-region]: /Documentation~/add-remove-region.gif "Adding and removing regions"
 [edit-world-position-region]: /Documentation~/edit-world-position-region.gif "Editing region using World Position"
+[showcase]: /Documentation~/showcase.gif "Showcase"
