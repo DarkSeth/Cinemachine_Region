@@ -51,6 +51,7 @@ namespace ActionCode.Cinemachine
 
         private RegionTransition transition;
         private Region previousRegion;
+        private Camera mainCamera;
 
         private const float MIN_TRANSITION_SPEED = 0.1F;
 
@@ -115,6 +116,8 @@ namespace ActionCode.Cinemachine
             UpdateCurrentRegion(vcam.Follow);
 
             if (CurrentRegion == null) return;
+
+            CheckMainCamera();
 
             var displacement = ConfineScreenEdges(ref state);
             var isDifferentRegion = previousRegion != null &&
@@ -191,11 +194,11 @@ namespace ActionCode.Cinemachine
         private Vector3 ConfineScreenEdges(ref CameraState state)
         {
             Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
-            float dy = state.Lens.Orthographic ?
-                state.Lens.OrthographicSize :
+            float dy = mainCamera.orthographic ?
+                mainCamera.orthographicSize :
                 // vertical size for perspective = distance * Mathf.Tan(Field of View * 0.5F * Pi)
-                Mathf.Abs(transform.position.z) * Mathf.Tan(state.Lens.FieldOfView * Mathf.Deg2Rad * 0.5F);
-            float dx = dy * state.Lens.Aspect;
+                Mathf.Abs(transform.position.z) * Mathf.Tan(mainCamera.fieldOfView * Mathf.Deg2Rad * 0.5F);
+            float dx = dy * mainCamera.aspect;// state.Lens.Aspect;
             Vector3 vx = (rot * Vector3.right) * dx;
             Vector3 vy = (rot * Vector3.up) * dy;
 
@@ -263,6 +266,14 @@ namespace ActionCode.Cinemachine
             Gizmos.DrawLine(topLeft, frame.min);
 
             Gizmos.color = gizmosColor;
+        }
+
+        private void CheckMainCamera()
+        {
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+            }
         }
     }
 }
