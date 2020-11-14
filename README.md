@@ -48,11 +48,9 @@ A linear camera transition will happen every time your Follow transform enters i
 
 ### Optional: Bind events to OnRegionChanged action
 
-If your game needs to run some logic between transitions you can easily do it using a custom ```UnityEvent``` provided by ```CinemachineRegionsConfiner```.
+If your game needs to run some logic between transitions you can easily do it using custom events provided by ```CinemachineRegionsConfiner```.
 
-You can fire any Unity event when a transition between regions is completely done by adding your custom function to ```CinemachineRegionsConfiner.OnRegionChanged``` action.
-
-The first argument is the previous Region and the second is the current one.
+You can fire an event when a transition between regions begins and/or is completely done by adding your custom functions to ```OnRegionBeginChange``` and ```OnRegionChanged``` actions.
 
 ```csharp
 using ActionCode.Cinemachine;
