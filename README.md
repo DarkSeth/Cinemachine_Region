@@ -46,7 +46,7 @@ A linear camera transition will happen every time your Follow transform enters i
 
 ![alt text][showcase]
 
-### Optional: Bind events to OnRegionChanged action
+### Optional: Bind custom Events for Region Transitions
 
 If your game needs to run some logic between transitions you can easily do it using custom events provided by ```CinemachineRegionsConfiner```.
 
