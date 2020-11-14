@@ -44,6 +44,12 @@ namespace ActionCode.Cinemachine
         }
 
         /// <summary>
+        /// Unity event fired when a transition between regions begins.
+        /// <para>The first argument is the current Region and the second is the next one.</para>
+        /// </summary>
+        public UnityAction<Region, Region> OnRegionBeginChange;
+
+        /// <summary>
         /// Unity event fired when a transition between regions has completed.
         /// <para>The first argument is the previous Region and the second is the current one.</para>
         /// </summary>
@@ -137,6 +143,7 @@ namespace ActionCode.Cinemachine
             {
                 var nextPosition = state.CorrectedPosition + displacement;
                 transition.Start(nextPosition);
+                FireRegionBeginChangevent();
             }
             else if (IsTransition)
             {
@@ -236,6 +243,14 @@ namespace ActionCode.Cinemachine
             var closest = CurrentRegion.ClosestPoint(camPos);
             closest.z = camPos.z;
             return closest - camPos;
+        }
+
+        private void FireRegionBeginChangevent()
+        {
+            if (OnRegionBeginChange != null)
+            {
+                OnRegionBeginChange.Invoke(LastRegion, CurrentRegion);
+            }
         }
 
         private void FireRegionChangedEvent()

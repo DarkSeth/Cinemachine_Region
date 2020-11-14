@@ -63,18 +63,24 @@ public sealed class Test_RegionTransitionEvent : MonoBehaviour
 
     private void OnEnable()
     {
-        confiner.OnRegionChanged += OnTransition;
+        confiner.OnRegionBeginChange += OnRegionBeginChange;
+        confiner.OnRegionChanged += OnRegionChanged;
     }
 
     private void OnDisable()
     {
-        confiner.OnRegionChanged -= OnTransition;
+        confiner.OnRegionBeginChange -= OnRegionBeginChange;
+        confiner.OnRegionChanged -= OnRegionChanged;
     }
 
-
-    private void OnTransition(Region previous, Region current)
+    private void OnRegionBeginChange(Region current, Region next)
     {
-        print($"Previous region was: {previous.name} and Current is: {current.name}");
+        print($"Begin region transition. Current: {current.name}. Next: {next.name}");
+    }
+
+    private void OnRegionChanged(Region previous, Region current)
+    {
+        print($"Finish region transition. Previous: {previous.name}. Current: {current.name}");
     }
 }
 ```
