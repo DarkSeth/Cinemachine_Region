@@ -254,8 +254,7 @@ namespace ActionCode.Cinemachine.Editor
         private void SaveRegionsData()
         {
             if (!confiner.HasRegionsData()) return;
-            var serializedRegionsData = new SerializedObject(confiner.regionsData);
-            serializedRegionsData.ApplyModifiedProperties();
+            EditorUtility.SetDirty(confiner.regionsData);
         }
 
         private void UpdateEditorGUI()
