@@ -115,7 +115,7 @@ namespace ActionCode.Cinemachine
             CinemachineCore.Stage stage,
             ref CameraState state, float deltaTime)
         {
-            var isValidStage = stage == CinemachineCore.Stage.Finalize || stage == CinemachineCore.Stage.Body;
+            var isValidStage = stage == CinemachineCore.Stage.Body;
             if (!HasRegionsData() || !isValidStage) return;
 
             previousRegion = CurrentRegion;
