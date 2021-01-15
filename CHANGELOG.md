@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Redundant RegionsDataPropertyAttribute
 
 ### Changed
+- Improve Region display name color
 - Fix not saving Regions Data on ScripableObject
 
 ## [1.0.0] - 2020-11-07

@@ -15,6 +15,7 @@ namespace ActionCode.Cinemachine.Editor
         /// </summary>
         public Region selectedRegion;
 
+        //TODO get colors from Cinemachine Preferences
         private readonly Color REGIONS_AREA_COLOR = Color.green * 0.6F;
         private readonly Color REGIONS_DELETE_BUTTON_COLOR = Color.red * 0.9F;
         private readonly Color REGIONS_CREATE_BUTTON_COLOR = Color.green * 1.8F;
@@ -131,7 +132,7 @@ namespace ActionCode.Cinemachine.Editor
                 alignment = TextAnchor.LowerLeft,
                 fontSize = 16
             };
-            sceneLabelStyle.normal.textColor = REGIONS_AREA_COLOR;
+            sceneLabelStyle.normal.textColor = REGIONS_AREA_COLOR * 2F;
         }
 
         private void DrawRegions()
