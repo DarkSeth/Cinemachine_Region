@@ -12,7 +12,6 @@ namespace ActionCode.Cinemachine
     [ExecuteAlways]
     public sealed class CinemachineRegionsConfiner : CinemachineExtension
     {
-        [RegionsDataProperty]
         [Tooltip("The regions which the camera is to be contained.")]
         public RegionsData regionsData;
         [Min(MIN_TRANSITION_SPEED)]

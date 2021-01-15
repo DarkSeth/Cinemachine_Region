@@ -3,8 +3,8 @@ using UnityEditor;
 
 namespace ActionCode.Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(RegionsDataPropertyAttribute))]
-    public sealed class RegionsDataPropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(RegionsData))]
+    public sealed class RegionsDataDrawer : PropertyDrawer
     {
         private bool hasRegionData;
         private RegionsData regionsData;
