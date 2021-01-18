@@ -93,7 +93,7 @@ Open the **manifest.json** file inside your Unity project's **Packages** folder 
 "scopedRegistries": [ 
     { 
         "name": "Action Code", 
-        "url": "http://34.83.179.179:4873/", 
+        "url": "http://35.185.220.19:4873/", 
         "scopes": [ "com.actioncode" ] 
     } 
 ],
