@@ -87,19 +87,7 @@ public sealed class Test_RegionTransitionEvent : MonoBehaviour
 
 ### Using the Package Registry Server
 
-Open the **manifest.json** file inside your Unity project's **Packages** folder and add this code-block before `dependencies` attribute:
-
-```json
-"scopedRegistries": [ 
-    { 
-        "name": "Action Code", 
-        "url": "http://35.185.220.19:4873/", 
-        "scopes": [ "com.actioncode" ] 
-    } 
-],
-```
-
-The package **ActionCode-Cinemachine Regions** will be available for you to install using the **Package Manager** windows.
+Follow the instructions inside [here](https://cutt.ly/ukvj1c8) and the package **ActionCode-Cinemachine Regions** will be available for you to install using the **Package Manager** windows.
 
 ### Using the Git URL
 
