@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2021-03-12
+### Changed
+- Bug fixes and code improvements
+
 ## [1.1.0] - 2020-11-14
 ### Added
 - Begin region transition event
@@ -56,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README
 - .gitignore
 
-[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.1.0
+[Unreleased]: https://bitbucket.org/nostgameteam/cinemachine-regions/branches/compare/master%0D1.1.1
+[1.1.1]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.1.1/
 [1.1.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.1.0/
 [1.0.0]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0/
 [1.0.0-preview.1]: https://bitbucket.org/nostgameteam/cinemachine-regions/src/1.0.0-preview.1/
